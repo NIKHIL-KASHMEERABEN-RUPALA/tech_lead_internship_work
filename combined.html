@@ -1,1 +1,144 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devantra - Professional Developer Network</title>
+    <!-- Font Awesome with fallback -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Google Fonts with fallback -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" media="all" onload="this.media='all'">
+    <!-- Local stylesheet -->
+    <link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="#" class="logo" aria-label="Devantra Home">
+            <div class="logo-icon">
+                <img id="devantraLogo" src="logo.png" alt="Devantra Logo" style="width:48px;height:48px;display:block;">
+            </div>
+        </a>
+        
+        <div class="search-container">
+            <input type="search" class="search-input" placeholder="Search..." aria-label="Search Devantra">
+        </div>
+        
+        <a href="#" class="header-signup-btn" role="button">Sign Up</a>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <aside class="left-sidebar" aria-label="Navigation and Information">
+            <div class="about-card">
+                <h3 class="about-title">About Us</h3>
+                <a href="#" class="sidebar-signup-btn" role="button">Sign Up</a>
+                <div class="login-text"><a href="#" aria-label="Login to Devantra">Login</a></div>
+            </div>
+            
+            <nav class="nav-card" aria-label="Main Navigation">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" aria-current="page">
+                            <i class="fas fa-home nav-icon" aria-hidden="true"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-user nav-icon" aria-hidden="true"></i>
+                            <span>About Us</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-trophy nav-icon" aria-hidden="true"></i>
+                            <span>Challenges</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-map-marker-alt nav-icon" aria-hidden="true"></i>
+                            <span>Roadmap</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-calendar nav-icon" aria-hidden="true"></i>
+                            <span>Calendar</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-phone nav-icon" aria-hidden="true"></i>
+                            <span>Contact Us</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" role="main">
+            <div class="content-filters" role="tablist">
+                <button class="filter-btn active" role="tab" aria-selected="true">Relevant</button>
+                <button class="filter-btn" role="tab" aria-selected="false">Latest</button>
+                <button class="filter-btn" role="tab" aria-selected="false">Top</button>
+            </div>
+            
+            <article class="post-card" aria-labelledby="post-title">
+                <h1 class="post-title" id="post-title">Devantra is Hiring!</h1>
+                
+                <div class="post-image" aria-hidden="true">
+                    <div class="sky"></div>
+                    <div class="hills"></div>
+                    <div class="cloud cloud1"></div>
+                    <div class="cloud cloud2"></div>
+                </div>
+                
+                <div class="post-actions">
+                    <div class="action-buttons">
+                        <div class="vote-buttons">
+                            <button class="vote-btn" aria-label="Upvote post">▲</button>
+                            <button class="vote-btn" aria-label="Downvote post">▼</button>
+                        </div>
+                        <span class="action-text">Share • Comment</span>
+                    </div>
+                    
+                    <button class="register-btn" aria-label="Register for Devantra">
+                        <span>Register</span>
+                        <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </article>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar" aria-label="Additional Information">
+            <div class="widget">
+                <div class="widget-header">
+                    <div>
+                        <h3 class="widget-title">Hackathons<br>Competition<br>Live Events</h3>
+                        <p class="widget-subtitle">Pan India/ Global</p>
+                    </div>
+                    <i class="fas fa-bell notification-icon" aria-hidden="true"></i>
+                </div>
+            </div>
+            
+            <div class="widget discuss-widget">
+                <div class="discuss-tag">#discuss</div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <i class="fas fa-sun" aria-hidden="true"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script src="script.js" type="text/javascript"></script>
+</body>
+</html>
