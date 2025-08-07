@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Devantra - Professional Developer Network</title>
     <!-- Font Awesome with fallback -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNNobody/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <!-- Google Fonts with fallback -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" media="all" onload="this.media='all'">
     <!-- Local stylesheet -->
     <style>
-
-         * {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -885,15 +883,6 @@
             }
         }
 
-        @keyframes skyShimmer {
-            0% {
-                background: linear-gradient(to bottom, #87CEEB, #B0E0E6);
-            }
-            100% {
-                background: linear-gradient(to bottom, #98D8E8, #C0E8F0);
-            }
-        }
-
         @keyframes hillsWave {
             0%, 100% {
                 transform: scaleY(1);
@@ -911,6 +900,13 @@
             50% {
                 opacity: 0.7;
                 transform: scale(1.1);
+            }
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
             }
         }
 
@@ -977,263 +973,14 @@
                 padding: 1rem;
             }
         }
-
-
-        
     </style>
 </head>
 <body>
-
-
-    <script>
-
-    $(document).ready(function(){
-
-        
-
-        // Enhanced Theme Toggle with Professional Animation and Classy Black/Light Mode
-        const themeToggle = document.getElementById('themeToggle');
-        const icon = themeToggle.querySelector('i');
-        let isDark = true;
-
-        function setDarkMode() {
-            document.documentElement.style.setProperty('--bg-primary', '#090909');
-            document.documentElement.style.setProperty('--bg-secondary', '#131313');
-            document.documentElement.style.setProperty('--bg-tertiary', '#18181b');
-            document.documentElement.style.setProperty('--card-bg', 'rgba(18, 18, 18, 0.97)');
-            document.documentElement.style.setProperty('--glass-bg', 'rgba(255,255,255,0.05)');
-            document.documentElement.style.setProperty('--text-white', '#fff');
-            document.documentElement.style.setProperty('--text-gray-light', '#e5e7eb');
-            document.documentElement.style.setProperty('--text-gray', '#9ca3af');
-            document.documentElement.style.setProperty('--text-gray-dark', '#6b7280');
-            document.documentElement.style.setProperty('--border-color', 'rgba(255,255,255,0.1)');
-            document.documentElement.style.setProperty('--navbar-bg', 'rgba(10, 10, 10, 0.95)');
-            document.documentElement.style.setProperty('--vote-arrow-dark', '#fff');
-            document.documentElement.style.setProperty('--vote-arrow-light', '#23272f');
-            document.body.style.background = 'linear-gradient(135deg, #090909 0%, #131313 50%, #18181b 100%)';
-            // Change logo to dark
-            const logoImg = document.getElementById('devantraLogo');
-            if (logoImg) logoImg.src = 'logo.png';
-            // Change vote arrow color
-            document.querySelectorAll('.vote-btn').forEach(btn => btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--vote-arrow-dark'));
-        }
-        function setLightMode() {
-            document.documentElement.style.setProperty('--bg-primary', '#f8fafc');
-            document.documentElement.style.setProperty('--bg-secondary', '#e5e7eb');
-            document.documentElement.style.setProperty('--bg-tertiary', '#f1f5f9');
-            document.documentElement.style.setProperty('--card-bg', 'rgba(255,255,255,0.97)');
-            document.documentElement.style.setProperty('--glass-bg', 'rgba(0,0,0,0.03)');
-            document.documentElement.style.setProperty('--text-white', '#18181b');
-            document.documentElement.style.setProperty('--text-gray-light', '#374151');
-            document.documentElement.style.setProperty('--text-gray', '#6b7280');
-            document.documentElement.style.setProperty('--text-gray-dark', '#9ca3af');
-            document.documentElement.style.setProperty('--border-color', 'rgba(0,0,0,0.08)');
-            document.documentElement.style.setProperty('--navbar-bg', '#fff');
-            document.documentElement.style.setProperty('--vote-arrow-dark', '#23272f');
-            document.documentElement.style.setProperty('--vote-arrow-light', '#23272f');
-            document.body.style.background = 'linear-gradient(135deg, #f8fafc 0%, #e5e7eb 50%, #f1f5f9 100%)';
-            // Change logo to light
-            const logoImg = document.getElementById('devantraLogo');
-            if (logoImg) logoImg.src = 'logo.png';
-            // Change vote arrow color
-            document.querySelectorAll('.vote-btn').forEach(btn => btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--vote-arrow-light'));
-        }
-        themeToggle.addEventListener('click', () => {
-            isDark = !isDark;
-            themeToggle.style.transform = 'scale(0.8) rotate(360deg)';
-            setTimeout(() => {
-                if (isDark) {
-                    icon.className = 'fas fa-sun';
-                    setDarkMode();
-                } else {
-                    icon.className = 'fas fa-moon';
-                    setLightMode();
-                }
-                themeToggle.style.transform = 'scale(1) rotate(0deg)';
-            }, 200);
-        });
-        // Set initial mode
-        setDarkMode();
-
-        // Enhanced Filter Buttons with Ripple Effect
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        
-        filterButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                
-                // Create ripple effect
-                createRipple(button);
-            });
-        });
-
-        // Professional Navigation with Smooth Transitions
-        const navLinks = document.querySelectorAll('.nav-link');
-        
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                navLinks.forEach(nav => nav.classList.remove('active'));
-                link.classList.add('active');
-                
-                // Add smooth transition effect
-                link.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    link.style.transform = '';
-                }, 150);
-            });
-        });
-
-        // Enhanced Vote Buttons with Professional Animation
-        const voteButtons = document.querySelectorAll('.vote-btn');
-        
-        voteButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                button.style.transform = 'scale(1.5) rotate(15deg)';
-                button.style.color = '#8b5cf6';
-                
-                setTimeout(() => {
-                    button.style.transform = 'scale(1)';
-                    button.style.color = '#ef4444';
-                }, 300);
-            });
-        });
-
-        // Professional Register Button Animation
-        const registerBtn = document.querySelector('.register-btn');
-        
-        registerBtn.addEventListener('click', () => {
-            registerBtn.style.transform = 'scale(0.95)';
-            
-            setTimeout(() => {
-                registerBtn.style.transform = 'translateY(-3px)';
-            }, 150);
-            
-            // Add success feedback
-            const originalText = registerBtn.innerHTML;
-            registerBtn.innerHTML = '<i class="fas fa-check"></i> <span>Registered!</span>';
-            
-            setTimeout(() => {
-                registerBtn.innerHTML = originalText;
-            }, 2000);
-        });
-
-        // Enhanced Search Input with Professional Effects
-        const searchInput = document.querySelector('.search-input');
-        
-        searchInput.addEventListener('focus', () => {
-            searchInput.style.transform = 'scale(1.02)';
-            searchInput.parentElement.style.transform = 'translateY(-2px)';
-        });
-        
-        searchInput.addEventListener('blur', () => {
-            searchInput.style.transform = 'scale(1)';
-            searchInput.parentElement.style.transform = 'translateY(0)';
-        });
-
-        // Professional Ripple Effect Function
-        function createRipple(element) {
-            const ripple = document.createElement('span');
-            const rect = element.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            
-            ripple.style.cssText = `
-                position: absolute;
-                width: ${size}px;
-                height: ${size}px;
-                left: ${rect.width / 2 - size / 2}px;
-                top: ${rect.height / 2 - size / 2}px;
-                background: rgba(139, 92, 246, 0.3);
-                border-radius: 50%;
-                transform: scale(0);
-                animation: ripple 0.6s linear;
-                pointer-events: none;
-            `;
-            
-            element.style.position = 'relative';
-            element.style.overflow = 'hidden';
-            element.appendChild(ripple);
-            
-            setTimeout(() => ripple.remove(), 600);
-        }
-
-        // Add CSS for ripple animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes ripple {
-                to {
-                    transform: scale(4);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Professional Intersection Observer for Scroll Animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // Observe elements for professional scroll animations
-        document.querySelectorAll('.widget, .post-card, .about-card, .nav-card').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
-            observer.observe(el);
-        });
-
-        // Professional Hover Effects for Cards
-        document.querySelectorAll('.about-card, .nav-card, .widget, .main-content').forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.borderColor = 'var(--border-hover)';
-            });
-            
-            card.addEventListener('mouseleave', () => {
-                card.style.borderColor = 'var(--border-color)';
-            });
-        });
-
-        // Smooth scroll behavior
-        document.documentElement.style.scrollBehavior = 'smooth';
-
-        // Professional loading animation
-        window.addEventListener('load', () => {
-            document.body.style.opacity = '0';
-            document.body.style.animation = 'fadeIn 1s ease-out forwards';
-        });
-
-
-
-
-
-
-
-
-                });
-
-        
-
-    </script>
-
-
-
-
     <!-- Header -->
     <header class="header">
         <a href="#" class="logo" aria-label="Devantra Home">
             <div class="logo-icon">
-                <img id="devantraLogo" src="logo.png" alt="Devantra Logo" style="width:48px;height:48px;display:block;">
+                <img id="devantraLogo" src="logo.png" alt="Devantra Logo" style="width:48px;height:48px;display:block;" onerror="this.src='https://via.placeholder.com/48?text=Logo';">
             </div>
         </a>
         
@@ -1241,7 +988,7 @@
             <input type="search" class="search-input" placeholder="Search..." aria-label="Search Devantra">
         </div>
         
-        <a href="#" class="header-signup-btn" role="button">Sign Up</a>
+        <a href="#" class="header-signup-btn" role="button" aria-label="Sign Up for Devantra">Sign Up</a>
     </header>
 
     <!-- Main Container -->
@@ -1250,7 +997,7 @@
         <aside class="left-sidebar" aria-label="Navigation and Information">
             <div class="about-card">
                 <h3 class="about-title">About Us</h3>
-                <a href="#" class="sidebar-signup-btn" role="button">Sign Up</a>
+                <a href="#" class="sidebar-signup-btn" role="button" aria-label="Sign Up for Devantra">Sign Up</a>
                 <div class="login-text"><a href="#" aria-label="Login to Devantra">Login</a></div>
             </div>
             
@@ -1299,9 +1046,9 @@
         <!-- Main Content -->
         <main class="main-content" role="main">
             <div class="content-filters" role="tablist">
-                <button class="filter-btn active" role="tab" aria-selected="true">Relevant</button>
-                <button class="filter-btn" role="tab" aria-selected="false">Latest</button>
-                <button class="filter-btn" role="tab" aria-selected="false">Top</button>
+                <button class="filter-btn active" role="tab" aria-selected="true" aria-label="Filter by Relevant">Relevant</button>
+                <button class="filter-btn" role="tab" aria-selected="false" aria-label="Filter by Latest">Latest</button>
+                <button class="filter-btn" role="tab" aria-selected="false" aria-label="Filter by Top">Top</button>
             </div>
             
             <article class="post-card" aria-labelledby="post-title">
@@ -1354,5 +1101,192 @@
         <i class="fas fa-sun" aria-hidden="true"></i>
     </button>
 
+    <!-- JavaScript -->
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Toggle
+            const themeToggle = document.getElementById('themeToggle');
+            const icon = themeToggle.querySelector('i');
+            let isDark = true;
+
+            function setDarkMode() {
+                document.documentElement.style.setProperty('--bg-primary', '#090909');
+                document.documentElement.style.setProperty('--bg-secondary', '#131313');
+                document.documentElement.style.setProperty('--bg-tertiary', '#18181b');
+                document.documentElement.style.setProperty('--card-bg', 'rgba(18, 18, 18, 0.97)');
+                document.documentElement.style.setProperty('--glass-bg', 'rgba(255,255,255,0.05)');
+                document.documentElement.style.setProperty('--text-white', '#fff');
+                document.documentElement.style.setProperty('--text-gray-light', '#e5e7eb');
+                document.documentElement.style.setProperty('--text-gray', '#9ca3af');
+                document.documentElement.style.setProperty('--text-gray-dark', '#6b7280');
+                document.documentElement.style.setProperty('--border-color', 'rgba(255,255,255,0.1)');
+                document.documentElement.style.setProperty('--navbar-bg', 'rgba(10, 10, 10, 0.95)');
+                document.documentElement.style.setProperty('--vote-arrow-dark', '#fff');
+                document.documentElement.style.setProperty('--vote-arrow-light', '#23272f');
+                document.body.style.background = 'linear-gradient(135deg, #090909 0%, #131313 50%, #18181b 100%)';
+                document.querySelectorAll('.vote-btn').forEach(btn => btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--vote-arrow-dark'));
+            }
+
+            function setLightMode() {
+                document.documentElement.style.setProperty('--bg-primary', '#f8fafc');
+                document.documentElement.style.setProperty('--bg-secondary', '#e5e7eb');
+                document.documentElement.style.setProperty('--bg-tertiary', '#f1f5f9');
+                document.documentElement.style.setProperty('--card-bg', 'rgba(255,255,255,0.97)');
+                document.documentElement.style.setProperty('--glass-bg', 'rgba(0,0,0,0.03)');
+                document.documentElement.style.setProperty('--text-white', '#18181b');
+                document.documentElement.style.setProperty('--text-gray-light', '#374151');
+                document.documentElement.style.setProperty('--text-gray', '#6b7280');
+                document.documentElement.style.setProperty('--text-gray-dark', '#9ca3af');
+                document.documentElement.style.setProperty('--border-color', 'rgba(0,0,0,0.08)');
+                document.documentElement.style.setProperty('--navbar-bg', '#fff');
+                document.documentElement.style.setProperty('--vote-arrow-dark', '#23272f');
+                document.documentElement.style.setProperty('--vote-arrow-light', '#23272f');
+                document.body.style.background = 'linear-gradient(135deg, #f8fafc 0%, #e5e7eb 50%, #f1f5f9 100%)';
+                document.querySelectorAll('.vote-btn').forEach(btn => btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--vote-arrow-light'));
+            }
+
+            themeToggle.addEventListener('click', () => {
+                isDark = !isDark;
+                themeToggle.style.transform = 'scale(0.8) rotate(360deg)';
+                setTimeout(() => {
+                    if (isDark) {
+                        icon.className = 'fas fa-sun';
+                        setDarkMode();
+                    } else {
+                        icon.className = 'fas fa-moon';
+                        setLightMode();
+                    }
+                    themeToggle.style.transform = 'scale(1) rotate(0deg)';
+                }, 200);
+            });
+
+            setDarkMode();
+
+            // Filter Buttons with Ripple Effect
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    createRipple(button);
+                });
+            });
+
+            // Navigation
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    link.classList.add('active');
+                    link.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        link.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            // Vote Buttons
+            const voteButtons = document.querySelectorAll('.vote-btn');
+            voteButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    button.style.transform = 'scale(1.5) rotate(15deg)';
+                    button.style.color = '#8b5cf6';
+                    setTimeout(() => {
+                        button.style.transform = 'scale(1';
+                        button.style.color = isDark ? getComputedStyle(document.documentElement).getPropertyValue('--vote-arrow-dark') : getComputedStyle(document.documentElement).getPropertyValue('--vote-arrow-light');
+                    }, 300);
+                });
+            });
+
+            // Register Button
+            const registerBtn = document.querySelector('.register-btn');
+            registerBtn.addEventListener('click', () => {
+                registerBtn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    registerBtn.style.transform = 'translateY(-3px)';
+                }, 150);
+                const originalText = registerBtn.innerHTML;
+                registerBtn.innerHTML = '<i class="fas fa-check"></i> <span>Registered!</span>';
+                setTimeout(() => {
+                    registerBtn.innerHTML = originalText;
+                }, 2000);
+            });
+
+            // Search Input
+            const searchInput = document.querySelector('.search-input');
+            searchInput.addEventListener('focus', () => {
+                searchInput.style.transform = 'scale(1.02)';
+                searchInput.parentElement.style.transform = 'translateY(-2px)';
+            });
+            searchInput.addEventListener('blur', () => {
+                searchInput.style.transform = 'scale(1)';
+                searchInput.parentElement.style.transform = 'translateY(0)';
+            });
+
+            // Ripple Effect
+            function createRipple(element) {
+                const ripple = document.createElement('span');
+                const rect = element.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${rect.width / 2 - size / 2}px;
+                    top: ${rect.height / 2 - size / 2}px;
+                    background: rgba(139, 92, 246, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                    pointer-events: none;
+                `;
+                element.style.position = 'relative';
+                element.style.overflow = 'hidden';
+                element.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            }
+
+            // Intersection Observer for Scroll Animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.widget, .post-card, .about-card, .nav-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                observer.observe(el);
+            });
+
+            // Hover Effects for Cards
+            document.querySelectorAll('.about-card, .nav-card, .widget, .main-content').forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.borderColor = 'var(--border-hover)';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.borderColor = 'var(--border-color)';
+                });
+            });
+
+            // Smooth Scroll
+            document.documentElement.style.scrollBehavior = 'smooth';
+
+            // Loading Animation
+            window.addEventListener('load', () => {
+                document.body.style.opacity = '0';
+                document.body.style.animation = 'fadeIn 1s ease-out forwards';
+            });
+        });
+    </script>
 </body>
 </html>
