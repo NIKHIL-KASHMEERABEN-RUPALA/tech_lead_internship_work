@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devantra - Professional Developer Network</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header - Same Structure, Enhanced Styling -->
+    <header class="header">
+        <a href="#" class="logo">
+            <div class="logo-icon">
+                <img id="devantraLogo" src="logo.png" alt="Devantra Logo" style="width:48px;height:48px;display:block;" />
+            </div>
+        </a>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search...">
+        </div>
+        
+        <a href="#" class="header-signup-btn">Sign Up</a>
+    </header>
+
+    <!-- Main Container - Same 3-column Layout -->
+    <div class="main-container">
+        <!-- Left Sidebar - Same Structure -->
+        <aside class="left-sidebar">
+            <div class="about-card">
+                <h3 class="about-title">About Us</h3>
+                <a href="#" class="sidebar-signup-btn">Sign Up</a>
+                <div class="login-text">Login</div>
+            </div>
+            
+            <div class="nav-card">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <i class="fas fa-home nav-icon"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-user nav-icon"></i>
+                            <span>About Us</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-trophy nav-icon"></i>
+                            <span>Challenges</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-map-marker-alt nav-icon"></i>
+                            <span>Roadmap</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-calendar nav-icon"></i>
+                            <span>Calendar</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-phone nav-icon"></i>
+                            <span>Contact Us</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content - Same Structure -->
+        <main class="main-content">
+            <div class="content-filters">
+                <button class="filter-btn active">Relevant</button>
+                <button class="filter-btn">Latest</button>
+                <button class="filter-btn">Top</button>
+            </div>
+            
+            <article class="post-card">
+                <h1 class="post-title">Devantra is Hiring!</h1>
+                
+                <div class="post-image">
+                    <div class="sky"></div>
+                    <div class="hills"></div>
+                    <div class="cloud cloud1"></div>
+                    <div class="cloud cloud2"></div>
+                </div>
+                
+                <div class="post-actions">
+                    <div class="action-buttons">
+                        <div class="vote-buttons">
+                            <button class="vote-btn">▲</button>
+                            <button class="vote-btn">▼</button>
+                        </div>
+                        <span class="action-text">Share • Comment</span>
+                    </div>
+                    
+                    <button class="register-btn">
+                        <span>Register</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
+                </div>
+            </article>
+        </main>
+
+        <!-- Right Sidebar - Same Structure -->
+        <aside class="right-sidebar">
+            <div class="widget">
+                <div class="widget-header">
+                    <div>
+                        <h3 class="widget-title">Hackathons<br>Competition<br>Live Events</h3>
+                        <p class="widget-subtitle">Pan India/ Global</p>
+                    </div>
+                    <i class="fas fa-bell notification-icon"></i>
+                </div>
+            </div>
+            
+            <div class="widget discuss-widget">
+                <div class="discuss-tag">#discuss</div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-sun"></i>
+    </button>
+
+     <script src="script.js"></script>
+</body>
+</html>
