@@ -1,0 +1,50 @@
+body {
+  background: linear-gradient(to right, #2e003e, #000000);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar {
+  background-color: #1a1a2e;
+  border-radius: 12px;
+  min-height: 90vh;
+}
+
+.nav-link {
+  color: #ccc;
+  padding: 8px;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+.nav-link.active,
+.nav-link:hover {
+  color: #fff;
+  background-color: #6a0dad;
+  border-radius: 8px;
+}
+
+.card {
+  border-radius: 15px;
+}
+
+.vote {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+button.btn-outline-light:hover {
+  background-color: #c77dff;
+  color: #000;
+}
+
+.card-title {
+  font-size: 1.5rem;
+}
+
+button.btn-light {
+  color: #000;
+}
+
+button.btn-light:hover {
+  background-color: #e0e0e0;
+}
