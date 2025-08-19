@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoLab - Run better reviews</title>
+    <style>
+  * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #0a0a0a;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* Navigation Styles */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.logo-text {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+  position: relative; /* Added for dropdown positioning */
+}
+
+
+.nav-item .dropdown-arrow {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.nav-item:hover .dropdown-arrow {
+  transform: rotate(180deg); /* flips ▼ to ▲ */
+}
+
+
+.dropdown-arrow {
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.nav-cta {
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* === Mega menu base === */
+:root {
+  --panel-top:#3d3d3d;    /* upper grey */
+  --panel-bottom:#000000; /* lower black */
+  --panel-border:rgba(255,255,255,.10);
+  --text-dim:#a7a7a7;
+  --accent:#f59e0b;
+}
+
+.nav-item.has-mega { position:relative; }
+
+/* compact flyout (Use Cases, Company) */
+.mega-panel {
+  position:fixed;
+  left:0; right:0; top:70px;
+  width: 220px;
+  top: 100%;
+  left: 550px;
+  z-index: 900;
+  background: linear-gradient(to bottom,var(--panel-top),var(--panel-bottom));
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.nav-item.has-mega:hover .mega-panel,
+.mega-panel:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.company-panel { left: 800px; }
+
+/* full width mega (Product, Resources) */
+.mega-full {
+  position: fixed;
+  left: 0; 
+  right: 0; 
+  top: 70px;
+  background: linear-gradient(to bottom,var(--panel-top),var(--panel-bottom));
+  border-top: 1px solid var(--panel-border);
+  border-bottom: 1px solid var(--panel-border);
+  box-shadow: 0 28px 80px rgba(0,0,0,.65);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .25s ease, transform .25s ease, visibility .25s ease;
+  pointer-events: none;
+  z-index: 999;
+}
+.mega-full::before {
+  content: "";
+  position: absolute;
+  top: -70px;   /* height of navbar */
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: transparent;
+}
+
+/* Add this only for nav items with mega menus */
+.nav-item.has-mega::after {
+  content: "";
+  position: absolute;
+  top: 100%;       /* directly below navbar */
+  left: 0;
+  width: 100%;     /* same width as nav item */
+  height: 100px;   /* extends hover area downward */
+  background: transparent;
+}
+.mega-panel {
+  left: 700px; /* adjust as needed */
+
+}
+#company-panel {
+  left: 900px; /* adjust as needed */
+}
+.nav-item:hover > .mega-full,
+.mega-full:hover {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.nav-item.has-mega:hover .mega-panel,
+.nav-item.has-mega:hover .mega-full,
+.mega-panel:hover,
+.mega-full:hover {
+  opacity:1; visibility:visible; transform:translateY(0);
+  pointer-events:auto;
+}
+
+/* shared inner container */
+.mega-container {
+  max-width:1200px; margin:0 auto; padding:20px 16px;
+}
+
+/* list block */
+.list-block { padding:4px 10px; }
+
+/* menu item */
+.menu-item {
+  display:flex; gap:8px; align-items:flex-start;
+  padding:6px 8px;
+  border-radius:8px;
+  transition:background .18s ease, border-color .18s ease, color .18s ease;
+  border:1px solid transparent;
+  font-size:12px;
+  line-height:1.3;
+}
+.menu-item:hover {
+  background:rgba(255,255,255,.05);
+  border-color:rgba(255,255,255,.08);
+  color:var(--accent);
+}
+.menu-item:hover .menu-desc { color:var(--accent); }
+
+.menu-title { font-weight:600; font-size:13px; }
+.menu-desc { color:var(--text-dim); font-size:11px; margin-top:2px; }
+
+/* icon */
+.menu-ic {
+  width:20px; height:20px; border-radius:5px;
+  background:rgba(255,255,255,.06);
+  display:grid; place-items:center; flex-shrink:0;
+  border:1px solid rgba(255,255,255,.08);
+  transition: all 0.2s ease;
+  color:#fff;
+}
+.menu-ic svg { width:13px; height:13px; fill: currentColor; }
+
+/* hover icon color = yellow */
+.menu-item:hover .menu-ic {
+  background: rgba(245,158,11,0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.menu-item:hover .menu-ic svg {
+  color: var(--accent);
+  fill: var(--accent);
+}
+
+/* section title */
+.section-title {
+  padding:6px 10px 8px;
+  font-weight:700;
+  letter-spacing:.2px;
+  opacity:.95;
+  font-size:13px;
+}
+
+/* Product mega */
+.product-grid {
+  display:grid; gap:20px;
+  grid-template-columns: 280px 1fr 260px;
+}
+
+/* card */
+.card {
+  border:1px solid var(--panel-border);
+  border-radius:10px;
+  background:rgba(0, 0, 0, 0.989);
+  padding:12px;
+  font-size:12px;
+}
+.card h4 { font-size:14px; margin-bottom:10px; }
+.update { padding:8px 0; border-bottom:1px solid rgba(255,255,255,.08); }
+.update:last-child { border-bottom:none; }
+.update time { color:var(--text-dim); font-size:10px; }
+.update .u-title { display:block; margin-top:4px; font-weight:600; font-size:12px; }
+
+/* features */
+.features .menu-item { padding:8px; }
+.features .menu-title { font-weight:600; font-size:13px; }
+.product-cta {
+  margin-top:10px; display:inline-block;
+  background:linear-gradient(135deg,#fbbf24,#f59e0b);
+  color:#000; font-weight:700;
+  border-radius:20px;
+  padding:8px 14px;
+  text-transform:uppercase; font-size:11px; letter-spacing:.2px;
+}
+
+/* integrations */
+.integrations .int-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:12px;
+}
+.integrations .int-item:last-child { border-bottom:none; }
+.integrations .arrow { opacity:.9; }
+
+/* Resources mega */
+.resources-grid {
+  display:grid; gap:20px;
+  grid-template-columns: 1.2fr 1fr;
+}
+.columns { display:grid; grid-template-columns: 1fr 1fr; gap:18px; }
+.box {
+  border:1px solid var(--panel-border);
+  border-radius:10px;
+  background:rgba(0,0,0,.35);
+  padding:12px;
+  font-size:12px;
+}
+.box.highlight {
+  border-color:rgba(245,158,11,.5);
+  background:linear-gradient(to bottom, rgba(245,158,11,.10), rgba(0,0,0,.35));
+}
+
+/* dropdown arrow */
+.nav-item .dropdown-arrow { transition:transform .25s ease; }
+.nav-item.has-mega:hover .dropdown-arrow { transform:rotate(180deg); }
+
+
+
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.mobile-menu-btn span {
+  width: 24px;
+  height: 2px;
+  background: #ffffff;
+  transition: all 0.3s;
+}
+
+/* Hamburger Animation */
+.mobile-menu-btn.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.mobile-menu-btn.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-btn.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* Mobile Menu Overlay */
+/* Overlay background (hidden by default) */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 71px;
+  left: -100%; /* hidden offscreen */
+  width: 100%;
+  height: 100%;
+  background: #2c2c2c; /* grey */
+  z-index: 9999;
+  transition: left 0.3s ease-in-out;
+}
+
+/* Show overlay */
+.mobile-menu-overlay.active {
+  left: 0;
+}
+
+/* Menu content */
+.mobile-menu-content {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  height: 100%;
+}
+
+/* Each nav item */
+.mobile-nav-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 1px solid #444; /* underline full width */
+}
+
+/* Arrow rotation */
+.dropdown-arrow {
+  transition: transform 0.3s ease;
+}
+.mobile-nav-item.active .dropdown-arrow {
+  transform: rotate(180deg); /* down → up */
+}
+
+/* CTA button */
+.mobile-nav-cta {
+  margin-top: 20px;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  background: #ffcc00;
+  color: #000;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+/* Updated dropdown menu styles for proper hover functionality */
+
+
+/* Improved hover states for smooth interaction */
+.nav-item.dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.dropdown-menu:hover {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Items inside */
+.dropdown-item {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-item:last-child {
+  margin-bottom: 0;
+}
+
+.dropdown-item strong {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+.dropdown-item p {
+  font-size: 13px;
+  color: #aaa;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Added icon styles for dropdown items */
+.dropdown-item-icon {
+  width: 20px;
+  height: 20px;
+  background: rgba(147, 51, 234, 0.2);
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.dropdown-item-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.dropdown-item-text {
+  flex: 1;
+}
+
+.mobile-menu-content {
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;          /* take full width */
+  max-width: none;       /* remove the 400px limit */
+  margin: 0;             /* remove auto-centering */
+  align-items: flex-start; /* make items align to left */
+}
+.mobile-nav-item.login-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* underline only LOGIN */
+}
+.mobile-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: 500;
+  color: #ffffff;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1); /* underline */
+  cursor: pointer;
+  transition: color 0.2s;
+  width: 100%; /* ensure border spans full width */
+}
+
+/* 1) Give borders to every item EXCEPT login */
+.mobile-nav-item { border-bottom: none; } /* reset */
+.mobile-nav-item:not(.login-item) {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 2) For LOGIN: no full-width border */
+.mobile-nav-item.login-item { border-bottom: none !important; }
+
+/* 3) Short underline just under the word */
+.mobile-nav-item.login-item .login {
+  display: inline-block;
+  padding-bottom: 6px;
+  border-bottom: 2px solid rgba(255,255,255,0.9); /* semi-white */
+  line-height: 1;
+}
+
+.mobile-nav-item:last-child {
+  border-bottom: none;
+}
+
+/* Mobile Dropdown Arrow */
+.mobile-nav-item .dropdown-arrow {
+  display: inline-block;
+  opacity: 0.7;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+.mobile-nav-item:hover .dropdown-arrow {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+.mobile-nav-item.login-item .login {
+  display: inline-block;
+  padding-bottom: 6px;
+  border-bottom: 2px solid rgba(255,255,255,0.9); /* semi-white */
+  line-height: 1;
+}
+
+
+/* CTA (Mobile) */
+.mobile-nav-cta {
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  width: 150px;        /* fixed width */
+  padding: 8px 0;      /* balanced height */
+  border-radius: 18px; /* slimmer pill */
+  font-weight: 600;
+  font-size: 14px;     /* slightly smaller text */
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 12px;
+  text-align: center;  /* center text inside */
+}
+
+
+
+/* Hero Section */
+
+.hero-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* push content left */
+  max-width: 1200px;  /* make container wider */
+  margin: 0 auto;
+  padding: 0 40px;    /* optional spacing */
+}
+
+.hero-content {
+  max-width: 700px;   /* increase width of text block */
+  text-align: left;
+  margin-left: -50px;
+  justify-content: flex-start; /* push content left */
+}
+
+
+.hero-content {
+  z-index: 2;
+}
+
+.hero-title {
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 32px;
+  background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-description {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #a0a0a0;
+  margin-bottom: 40px;
+  max-width: 500px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* Changed from center to flex-start to align buttons to the left */
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #000000;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+
+
+.btn-secondary {
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid  #f59e0b;
+  padding: 14px 32px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+
+
+/* Hero Visual */
+.hero-visual {
+  position: relative;
+  height: 800px;   /* bigger so image + card fit */
+  z-index: 1;
+}
+
+/* Equipment image */
+.equipment-image {
+  position: relative;
+  z-index: 2; /* above the card */
+  width: 800px;
+  height: 800px;
+  object-fit: contain;
+  display: block;
+  margin: 250px 10px 0 500px;
+}
+
+/* ReviewAI Interface (behind/right side) */
+.review-ai-interface {
+  position: absolute;
+  top: 150px;  /* shift down to align vertically with image */
+  left:650px; /* adjust horizontally */
+  width: 320px;
+
+  background: rgba(30, 27, 75, 0.9);
+  border: 1px solid rgba(147, 51, 234, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(147, 51, 234, 0.2);
+
+  z-index: 1; /* stays behind the image */
+}
+
+
+.interface-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.interface-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-logo {
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  border-radius: 2px;
+}
+
+.interface-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.lessons-header {
+  margin-bottom: 16px;
+}
+
+.lessons-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a0a0a0;
+  letter-spacing: 1px;
+}
+
+.lesson-item {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.lesson-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.lesson-text {
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.lesson-status {
+  background: #3b82f6;
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.lesson-description {
+  font-size: 12px;
+  color: #a0a0a0;
+  line-height: 1.4;
+}
+
+.key-takeaways {
+  margin-top: 16px;
+}
+
+.takeaways-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a0a0a0;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.takeaways-list {
+  list-style: none;
+  font-size: 12px;
+  color: #a0a0a0;
+  line-height: 1.4;
+}
+
+.takeaways-list li {
+  position: relative;
+  padding-left: 16px;
+  margin-bottom: 4px;
+}
+
+.takeaways-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #3b82f6;
+}
+
+/* Parent must be relative */
+.industrial-equipment {
+  position: relative;
+}
+
+/* Floating card base */
+.floating-card {
+  position: absolute;
+  background: rgba(10, 10, 10, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  max-width: 280px;
+  color: #fff;
+  z-index: 5; /* above the image */
+}
+
+/* Card 1: Systems Engineer (top-left over image) */
+.systems-engineer {
+  top: 350px;  /* positioned in upper area of image */
+  left:400px; /* left side over the equipment image */
+}
+
+/* Card 2: ReviewAI (bottom-right over image) */
+.review-ai-small {
+  top: 550px;  /* positioned in lower area of image */
+  left: 650px; /* right side over the equipment image */
+}
+
+/* Mobile: stack cards below image */
+@media (max-width: 768px) {
+  .floating-card {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    margin: 20px auto;
+  }
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .hero-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;      
+    justify-content: center;
+    
+    padding: 40px 20px;
+    text-align: center;
+    
+  }
+
+  .hero-content {
+    order: 1;   
+    margin: 60px auto;
+    max-width: 90%;
+  }
+
+  .hero-title {
+    font-size: 36px;
+    margin-bottom: 20px;
+  }
+
+  .hero-description {
+    font-size: 16px;
+    margin-bottom: 28px;
+  }
+
+  .hero-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .hero-visual {
+    order: 2;
+    position: relative;   /* allow layering */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   
+  }
+
+  .equipment-image {
+    width: 85%;           /* bigger image */
+    max-width: 420px;     /* increased max size */
+    height: auto;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;     /* image above Review AI */
+  }
+
+  /* ReviewAI goes behind image */
+  .review-ai-interface {
+  position: absolute;
+  top: 40%;             
+  left: 60%;            
+  transform: translate(-50%, -50%);
+  width: 200px;          /* smaller width */
+  padding: 12px;         /* reduced padding */
+  z-index: 1;            
+  font-size: 12px;       /* base font size smaller */
+}
+
+/* Title inside Review AI */
+.review-ai-interface .interface-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Lesson item text */
+.review-ai-interface .lesson-text {
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.review-ai-interface .lesson-description {
+  font-size: 10px;
+  line-height: 1.3;
+  color: #aaa;
+}
+
+/* Key takeaways */
+.review-ai-interface .takeaways-title {
+  font-size: 10px;
+}
+
+.review-ai-interface .takeaways-list {
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+
+  /* Floating cards go on top of image */
+ .floating-card {
+  position: absolute;
+  z-index: 3;           /* above the image */
+  max-width: 150px;     /* smaller width */
+  padding: 8px;         /* reduce padding */
+  font-size: 12px;      /* shrink text inside */
+}
+
+.floating-card .card-title {
+  font-size: 12px;      /* smaller title */
+  font-weight: 600;
+}
+
+.floating-card .card-subtitle {
+  font-size: 10px;      /* smaller subtitle */
+  line-height: 1.3;
+}
+
+
+  /* Position System Engineer card top-left over image */
+  .systems-engineer {
+    top: 30%;
+    left: 5%;
+  }
+
+  /* Position Review AI small card bottom-right over image */
+  .review-ai-small {
+    bottom: 30%;
+    right:25%;
+  }
+}
+/* Tablet-specific styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hero-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;     /* center horizontally */
+    justify-content: center; /* center vertically */
+    gap: 40px;
+    padding: 40px 20px;
+    text-align: center; 
+    margin-top: 60px;/* center text */
+  }
+
+  .hero-content {
+    order: 1;                /* content first */
+    max-width: 80%;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 48px;
+    margin-bottom: 24px;
+  }
+
+  .hero-description {
+    font-size: 18px;
+    margin-bottom: 32px;
+  }
+
+  .hero-buttons {
+    justify-content: center; /* buttons centered */
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 14px 28px;
+    font-size: 15px;
+  }
+
+  .hero-visual {
+    order: 2;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    margin-top: 20px;
+  }
+
+  .equipment-image {
+    width: 85%;              /* larger image */
+    max-width: 600px;
+    height: auto;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;              /* above review AI */
+  }
+
+  /* Review AI sits behind image */
+  .review-ai-interface {
+  position: absolute;
+  top: 40%;
+  left: 70%;
+  transform: translate(-50%, -50%);
+  width: 220px;        /* smaller width */
+  padding: 8px 10px;   /* tighter padding */
+  font-size: 11px;     /* smaller base text */
+  line-height: 1.4;
+  z-index: 1;          /* behind image */
+}
+
+/* Inside elements scale down too */
+.review-ai-interface .interface-title {
+  font-size: 13px;
+}
+
+.review-ai-interface .lessons-title {
+  font-size: 10px;
+}
+
+.review-ai-interface .lesson-text {
+  font-size: 11px;
+}
+
+.review-ai-interface .lesson-description,
+.review-ai-interface .takeaways-list {
+  font-size: 10px;
+}
+
+
+ /* Floating cards on top of image (Tablet) */
+.floating-card {
+  position: absolute;
+  z-index: 3;              
+  max-width: 160px;        /* smaller box */
+  padding: 8px 10px;       /* reduce spacing */
+  font-size: 12px;         /* smaller text */
+}
+
+/* Card title */
+.floating-card .card-title {
+  font-size: 14px;
+  font-weight: 600;
+  
+}
+
+/* Card subtitle */
+.floating-card .card-subtitle {
+  font-size: 11px;
+  line-height: 1.3;
+}
+.systems-engineer {
+  top: 20%;   /* was 15% */
+  left:25%;   /* was 8% */
+}
+
+/* Card 2: Review AI – move a bit up & left */
+.review-ai-small {
+  top: 52%;   /* distance from top of image */
+  left:60%;  /* distance from left of image */
+  bottom: auto; 
+  right: auto;
+}
+
+}
+
+
+
+/* Show hamburger for both mobile and tablet */
+@media (max-width: 1024px) {
+  .nav-menu {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+}
+.equipment-image {
+  width: 800px;
+  height: 800px;
+  object-fit: contain;
+  display: block;
+  position: relative;
+  top: -200px;   /* moves image UP */
+  left: -200px;  /* moves image LEFT */
+  
+}@media (max-width: 1024px) {
+  .equipment-image {
+    width: 600px;
+    height: 600px;
+    top: -30px;  /* adjust positioning */
+    left: 50px;
+  }
+}
+
+/* Mobile view (max 768px) */
+@media (max-width: 768px) {
+  .equipment-image {
+    width: 100%;     /* full width of screen */
+    height: auto;    /* keep aspect ratio */
+    top: 0;          /* reset positioning */
+    left: 0;
+  }
+}
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo"><img src="logo.png" alt="" width="50px" height="50px"></div>
+                <span class="logo-text">Devantra</span>
+            </div>
+            
+            <!-- Desktop Navigation -->
+     <div class="nav-menu">
+  <!-- USE CASES (compact flyout) -->
+  <div class="nav-item has-mega">
+    <span>Use Cases</span>
+    <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+
+    <div class="mega-panel">
+      <div class="list-block">
+        <div class="menu-item">
+          <span class="menu-ic">
+            <!-- clipboard/check -->
+            <svg viewBox="0 0 24 24"><path d="M9 6h6m-7 5 2 2 5-5M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg>
+          </span>
+          <div>
+            <div class="menu-title" id="design-review">Design Review</div>
+            <div class="menu-desc" id="design-review">Collaborate 2x faster</div>
+          </div>
+        </div>
+
+        <div class="menu-item">
+          <span class="menu-ic">
+            <!-- handshake -->
+            <svg viewBox="0 0 24 24"><path d="M8 12l3 3 5-5M3 9l5-2 4 3m9 2-5 2-4-3"/></svg>
+          </span>
+          <div>
+            <div class="menu-title">Supplier Collaboration</div>
+            <div class="menu-desc">For secure, simple sharing</div>
+          </div>
+        </div>
+
+        <div class="menu-item">
+          <span class="menu-ic">
+            <!-- bullseye -->
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg>
+          </span>
+          <div>
+            <div class="menu-title">Cost Reduction</div>
+            <div class="menu-desc">Hit your toughest targets</div>
+          </div>
+        </div>
+
+        <div class="menu-item">
+          <span class="menu-ic">
+            <!-- rocket -->
+            <svg viewBox="0 0 24 24"><path d="M9 15l-2 2 2 2 2-2m6-12-5 5M4 10l6 0m8-8-2 6-6 2"/></svg>
+          </span>
+          <div>
+            <div class="menu-title">New Product Development</div>
+            <div class="menu-desc">Launch new products faster</div>
+          </div>
+        </div>
+
+        <div class="menu-item">
+          <span class="menu-ic">
+            <!-- users -->
+            <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0"/></svg>
+          </span>
+          <div>
+            <div class="menu-title">Customer Collaboration</div>
+            <div class="menu-desc">Be the supplier of choice</div>
+          </div>
+        </div>
+
+        <div class="menu-item">
+          <span class="menu-ic">
+            <!-- file-text -->
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+          </span>
+          <div>
+            <div class="menu-title">Documentation and Audits</div>
+            <div class="menu-desc">Simplify audit prep</div>
+          </div>
+        </div>
+
+        <div class="menu-item">
+          <span class="menu-ic">
+            <!-- factory/gear-ish -->
+            <svg viewBox="0 0 24 24"><path d="M3 21V9l6 3V9l6 3V9l6 3v9H3z"/></svg>
+          </span>
+          <div>
+            <div class="menu-title">Design for Manufacturability</div>
+            <div class="menu-desc">Ditch the DFM PowerPoint</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT (full-width mega) -->
+  <div class="nav-item has-mega">
+    <span>Product</span>
+    <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+
+    <div class="mega-full">
+      <div class="mega-container product-grid">
+        <!-- Left: Product updates card -->
+        <div class="card">
+          <h4>Product updates</h4>
+          <div class="update">
+            <time>Aug 06, 2025</time>
+            <span class="u-title">New Feedback Activity Tab + Locking Feedback From Editing</span>
+          </div>
+          <div class="update">
+            <time>Jul 08, 2025</time>
+            <span class="u-title">Improved Workspace Visibility</span>
+          </div>
+          <div class="update">
+            <time>Jun 18, 2025</time>
+            <span class="u-title">New: Export Feedback as a PDF or CSV Report</span>
+          </div>
+          <a class="product-cta" href="#">Product Overview</a>
+        </div>
+
+        <!-- Center: Features -->
+        <div class="features">
+          <div class="section-title">Features</div>
+
+          <!-- A selection matching the screenshot style -->
+          <div class="menu-item">
+            <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M21 8v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8m0 0l9 6 9-6M3 8l9-6 9 6"/></svg></span>
+            <div><div class="menu-title">Share Files</div><div class="menu-desc">Share CAD with anyone</div></div>
+          </div>
+
+          <div class="menu-item">
+            <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M8 12h8M8 16h5M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg></span>
+            <div><div class="menu-title">Request Reviews</div><div class="menu-desc">Design reviews virtually</div></div>
+          </div>
+
+          <div class="menu-item">
+            <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M3 3h18v14H3z"/><path d="M8 21h8"/></svg></span>
+            <div><div class="menu-title">Model Viewing</div><div class="menu-desc">Multiplayer in browser</div></div>
+          </div>
+
+          <div class="menu-item">
+            <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M8 7h8M6 11h12M10 15h8"/></svg></span>
+            <div><div class="menu-title">Issue Management</div><div class="menu-desc">Made sortable for you</div></div>
+          </div>
+
+          <div class="menu-item">
+            <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 3v6l4 2M8 19h8"/></svg></span>
+            <div><div class="menu-title">AutoReview</div><div class="menu-desc">Check CAD with AI</div></div>
+          </div>
+
+          <div class="menu-item">
+            <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M8 6h8M8 10h4M6 4h12a2 2 0 0 1 2 2v12l-4-3-4 3-4-3-4 3V6a2 2 0 0 1 2-2z"/></svg></span>
+            <div><div class="menu-title">Pin Comments</div><div class="menu-desc">Directly on 2D or 3D</div></div>
+          </div>
+
+          <div class="menu-item">
+            <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M8 9h8M8 13h6M4 5h16v14H4z"/></svg></span>
+            <div><div class="menu-title">Discuss Issues</div><div class="menu-desc">Without email threads</div></div>
+          </div>
+
+          <div class="menu-item">
+            <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M9 21v-8h6v8"/></svg></span>
+            <div><div class="menu-title">Configure Feedback</div><div class="menu-desc">Assign, tag and sort issues</div></div>
+          </div>
+
+          <div class="menu-item">
+            <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M6 6h12M8 18h8"/></svg></span>
+            <div><div class="menu-title">Review and Feedback Insights</div><div class="menu-desc">Everything in one overview</div></div>
+          </div>
+
+          <div class="menu-item">
+            <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-8-8"/><path d="M12 6v6l4 2"/></svg></span>
+            <div><div class="menu-title">AI Lessons Learned</div><div class="menu-desc">Prevent repeat mistakes</div></div>
+          </div>
+        </div>
+
+        <!-- Right: Integrations -->
+        <div class="integrations">
+          <div class="section-title">Integrations</div>
+          <div class="int-item"><span>Windchill</span><span class="arrow">›</span></div>
+          <div class="int-item"><span>Teamcenter</span><span class="arrow">›</span></div>
+          <div class="int-item"><span>3DEXPERIENCE</span><span class="arrow">›</span></div>
+          <div class="int-item"><span>SolidWorks</span><span class="arrow">›</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPANY (compact flyout) -->
+<div class="nav-item has-mega company-nav">
+  <span>Company</span>
+  <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+    <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+  </svg>
+
+  <!-- changed from mega-panel to company-panel -->
+  <div class="mega-panel company-panel" id="company-panel">
+    <div class="list-block">
+      <div class="menu-item">
+        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M3 21V7l9-4 9 4v14M9 21v-8h6v8"/></svg></span>
+        <div><div class="menu-title">About Us</div><div class="menu-desc">Get to know CoLab</div></div>
+      </div>
+      <div class="menu-item">
+        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8h7a5 5 0 0 1 5 5"/></svg></span>
+        <div><div class="menu-title">Why CoLab?</div><div class="menu-desc">Better products faster</div></div>
+      </div>
+      <div class="menu-item">
+        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M6 3h12M6 11h12M8 15h8M10 19h4"/></svg></span>
+        <div><div class="menu-title">Careers</div><div class="menu-desc">Be part of it</div></div>
+      </div>
+      <div class="menu-item">
+        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 1l3 6 6 1-4 5 1 7-6-3-6 3 1-7-4-5 6-1z"/></svg></span>
+        <div><div class="menu-title">Security</div><div class="menu-desc">How we protect your IP</div></div>
+      </div>
+      <div class="menu-item">
+        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M4 4h16v10H4z"/><path d="M8 18h8"/></svg></span>
+        <div><div class="menu-title">News</div><div class="menu-desc">Stay up-to-date</div></div>
+      </div>
+      <div class="menu-item">
+        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M21 10v10H3V4h10"/><path d="M21 10h-8V2"/></svg></span>
+        <div><div class="menu-title">Contact Us</div><div class="menu-desc">Get in touch</div></div>
+      </div>
+      <div class="menu-item">
+        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg></span>
+        <div><div class="menu-title">DES 2025</div><div class="menu-desc">Design Engagement Summit</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- RESOURCES (full-width mega) -->
+  <div class="nav-item has-mega">
+    <span>Resources</span>
+    <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+
+    <div class="mega-full">
+      <div class="mega-container resources-grid">
+        <!-- left: two columns -->
+        <div class="columns">
+          <div>
+            <div class="section-title">Case Studies</div>
+            <div class="box">
+              <div class="menu-item"><div class="menu-title">POLARIS</div></div>
+              <div class="menu-item"><div class="menu-title">IMI Critical Engineering</div></div>
+              <div class="menu-item"><div class="menu-title">KOMATSU</div></div>
+              <div class="menu-item"><div class="menu-title">SCHAEFFLER</div></div>
+              <div class="menu-item"><div class="menu-title" style="color:var(--accent)">More case studies ›</div></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-title">Resources</div>
+            <div class="box">
+              <div class="menu-item">
+                <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M4 19.5V4a2 2 0 0 0 2-2h9l5 5v12.5"/></svg></span>
+                <div><div class="menu-title">Blog</div><div class="menu-desc">Our articles</div></div>
+              </div>
+              <div class="menu-item">
+                <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M7 8h10M7 12h10M7 16h10"/></svg></span>
+                <div><div class="menu-title">Onboarding</div><div class="menu-desc">Starting with CoLab</div></div>
+              </div>
+              <div class="menu-item">
+                <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
+                <div><div class="menu-title">CoLab Research Hub</div><div class="menu-desc">The latest engineering trends</div></div>
+              </div>
+              <div class="menu-item">
+                <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 19l9-7-9-7-9 7 9 7z"/></svg></span>
+                <div><div class="menu-title">What is a DES?</div><div class="menu-desc">Dive deeper into DES</div></div>
+              </div>
+              <div class="menu-item">
+                <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M3 3h18v14H3z"/><path d="M8 21h8"/></svg></span>
+                <div><div class="menu-title">Product Tour Library</div><div class="menu-desc">Everything about our product</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- right highlight cards -->
+        <div>
+          <div class="box highlight" style="margin-bottom:18px">
+            <div class="menu-item">
+              <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M3 11l19-8-8 19-2-9-9-2z"/></svg></span>
+              <div>
+                <div class="menu-title">Contact Support</div>
+                <div class="menu-desc">Submit a ticket</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="box highlight">
+            <div class="menu-item">
+              <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 3l10 6-10 6L2 9l10-6z"/><path d="M2 15l10 6 10-6"/></svg></span>
+              <div>
+                <div class="menu-title">Knowledge Base</div>
+                <div class="menu-desc">Helpful articles</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /mega-container -->
+    </div>
+  </div>
+
+  <div class="nav-item" style="border-bottom: 2px solid white; display: inline-block;">LOGIN</div>
+
+  <button class="nav-cta">GET A DEMO</button>
+</div>
+
+
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    
+         <!-- Mobile Menu Overlay -->
+<div class="mobile-menu-overlay">
+  <div class="mobile-menu-content">
+    
+    <div class="mobile-nav-item">
+      <span>Use Cases</span>
+      <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+        <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="mobile-nav-item">
+      <span>Product</span>
+      <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+        <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="mobile-nav-item">
+      <span>Company</span>
+      <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+        <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="mobile-nav-item">
+      <span>Resources</span>
+      <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+        <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="mobile-nav-item login-item">
+      <span class="login">LOGIN</span>
+    </div>
+
+    <button class="mobile-nav-cta">GET A DEMO</button>
+  </div>
+</div>
+
+    <!-- Hero Section -->
+    <main class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                   Compete.<br>
+                Learn.<br>
+                Innovate.
+                </h1>
+                
+                <p class="hero-description">
+                  The Devantra Community is your hub for challenging coding competitions, insightful events, and a vibrant network of developers. Showcase your skills, learn from the best, and innovate the future of tech.
+                </p>
+                
+                <div class="hero-buttons">
+                    <button class="btn-primary">Join a Competition</button>
+                    <button class="btn-secondary">Explore Events</button>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <!-- 3D Industrial Equipment Illustration -->
+                <div class="industrial-equipment">
+                    
+                           <img src="https://cdn.prod.website-files.com/5e4d9854e6dad067f4b514b3/6821b80e4b15f4fd0bb6bad8_Frame%201171274273.avif" 
+     alt="3D Industrial Equipment Illustration"
+     class="equipment-image">
+                </div>
+                
+                <!-- ReviewAI Interface -->
+                <div class="review-ai-interface">
+                    <div class="interface-header">
+                        <div class="interface-icon">
+                            <div class="ai-logo"></div>
+                        </div>
+                        <span class="interface-title">ReviewAI</span>
+                    </div>
+                    
+                    <div class="interface-content">
+                        <div class="lessons-header">
+                            <span class="lessons-title">LESSONS LEARNED</span>
+                        </div>
+                        
+                        <div class="lesson-item">
+                            <div class="lesson-header">
+                                <span class="lesson-text">Improve chip and coolant shielding around tool taper</span>
+                                <span class="lesson-status new">New</span>
+                            </div>
+                            <p class="lesson-description">
+                                In earlier builds, debris ingress at the tool holder taper led to increased runout and maintenance downtime. Adding shielding mitigates this issue.
+                            </p>
+                        </div>
+                        
+                        <div class="key-takeaways">
+                            <span class="takeaways-title">KEY TAKEAWAYS</span>
+                            <ul class="takeaways-list">
+                                <li>Ensure adequate chip flow clearance near taper</li>
+                                <li>Position coolant flow lines not backward with holder seal</li>
+                                <li>Use gaskets at flange to keep chips from interfering</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional UI Elements -->
+                <div class="floating-card systems-engineer">
+                    <div class="card-header">
+                        <div class="avatar"></div>
+                        <div class="card-info">
+                            <span class="card-title">Systems Engineer</span>
+                            <span class="card-subtitle">We should isolate functional impacts and ensure it's a good machined reference face early in the stack to reduce tolerance accumulation.</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="floating-card review-ai-small">
+                    <div class="card-header">
+                        <div class="ai-avatar"></div>
+                        <div class="card-info">
+                            <span class="card-title">ReviewAI</span>
+                            <span class="card-subtitle">Add a locking or clamping mechanism to protect the tool taper from chip ingress.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script >function toggleMobileMenu() {
+  const menuBtn = document.querySelector(".mobile-menu-btn")
+  const mobileMenuOverlay = document.querySelector(".mobile-menu-overlay")
+
+  menuBtn.classList.toggle("active")
+  mobileMenuOverlay.classList.toggle("active")
+
+  // Prevent body scroll when menu is open
+  if (mobileMenuOverlay.classList.contains("active")) {
+    document.body.style.overflow = "hidden"
+  } else {
+    document.body.style.overflow = "auto"
+  }
+}
+
+document.addEventListener("click", (e) => {
+  const mobileMenuOverlay = document.querySelector(".mobile-menu-overlay")
+  const menuBtn = document.querySelector(".mobile-menu-btn")
+
+  if (
+    mobileMenuOverlay.classList.contains("active") &&
+    !mobileMenuOverlay.contains(e.target) &&
+    !menuBtn.contains(e.target)
+  ) {
+    toggleMobileMenu()
+  }
+})
+
+// Close mobile menu when clicking on menu items
+document.querySelectorAll(".mobile-nav-item").forEach((item) => {
+  item.addEventListener("click", () => {
+    if (document.querySelector(".mobile-menu-overlay").classList.contains("active")) {
+      toggleMobileMenu()
+    }
+  })
+})
+
+// Add smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+  anchor.addEventListener("click", function (e) {
+    e.preventDefault()
+    const target = document.querySelector(this.getAttribute("href"))
+    if (target) {
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      })
+    }
+  })
+})
+
+// Add scroll effect to navbar
+window.addEventListener("scroll", () => {
+  const navbar = document.querySelector(".navbar")
+  if (window.scrollY > 50) {
+    navbar.style.background = "rgba(10, 10, 10, 0.98)"
+  } else {
+    navbar.style.background = "rgba(10, 10, 10, 0.95)"
+  }
+})
+
+// Add hover effects to buttons
+document.querySelectorAll(".btn-primary, .btn-secondary, .nav-cta").forEach((button) => {
+  button.addEventListener("mouseenter", function () {
+    this.style.transform = "translateY(-2px)"
+  })
+
+  button.addEventListener("mouseleave", function () {
+    this.style.transform = "translateY(0)"
+  })
+})
+
+// Animate elements on scroll
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: "0px 0px -50px 0px",
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = "1"
+      entry.target.style.transform = "translateY(0)"
+    }
+  })
+}, observerOptions)
+
+// Observe elements for animation
+document.querySelectorAll(".hero-content, .hero-visual").forEach((el) => {
+  el.style.opacity = "0"
+  el.style.transform = "translateY(30px)"
+  el.style.transition = "opacity 0.6s ease, transform 0.6s ease"
+  observer.observe(el)
+})
+ document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("design-review").addEventListener("click", function () {
+      window.location.href = "design_review.html";
+    });
+  });
+
+// Initialize animations after page load
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    document.querySelectorAll(".hero-content, .hero-visual").forEach((el) => {
+      el.style.opacity = "1"
+      el.style.transform = "translateY(0)"
+    })
+  }, 100)
+})</script>
+</body>
+</html>
