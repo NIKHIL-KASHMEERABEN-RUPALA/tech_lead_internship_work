@@ -1,0 +1,3079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COLAB - Technical Review Package</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #000;
+            color: white;
+        }
+
+        /* Replaced simple navbar styles with comprehensive responsive navbar system */
+        /* Navigation Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-item .dropdown-arrow {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-arrow {
+            opacity: 0.7;
+            transition: all 0.2s ease;
+        }
+
+        .nav-cta {
+            background: transparent;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        /* Mega menu base */
+        :root {
+            --panel-top:#3d3d3d;
+            --panel-bottom:#000000;
+            --panel-border:rgba(255,255,255,.10);
+            --text-dim:#a7a7a7;
+            --accent:#f59e0b;
+        }
+
+        .nav-item.has-mega { position:relative; }
+
+        /* compact flyout (Use Cases, Company) */
+        .mega-panel {
+            position:fixed;
+            width: 220px;
+            top: 100%;
+            left: 550px;
+            z-index: 900;
+            background: linear-gradient(to bottom,var(--panel-top),var(--panel-bottom));
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.has-mega:hover .mega-panel,
+        .mega-panel:hover {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .company-panel { left: 800px; }
+
+        /* full width mega (Product, Resources) */
+        .mega-full {
+            position: fixed;
+            left: 0; 
+            right: 0; 
+            top: 70px;
+            background: linear-gradient(to bottom,var(--panel-top),var(--panel-bottom));
+            border-top: 1px solid var(--panel-border);
+            border-bottom: 1px solid var(--panel-border);
+            box-shadow: 0 28px 80px rgba(0,0,0,.65);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(8px);
+            transition: opacity .25s ease, transform .25s ease, visibility .25s ease;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .mega-full::before {
+            content: "";
+            position: absolute;
+            top: -70px;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: transparent;
+        }
+
+        .nav-item.has-mega::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: transparent;
+        }
+
+        .mega-panel {
+            left: 700px;
+        }
+
+        #company-panel {
+            left: 900px;
+        }
+
+        .nav-item:hover > .mega-full,
+        .mega-full:hover {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .nav-item.has-mega:hover .mega-panel,
+        .nav-item.has-mega:hover .mega-full,
+        .mega-panel:hover,
+        .mega-full:hover {
+            opacity:1; 
+            visibility:visible; 
+            transform:translateY(0);
+            pointer-events:auto;
+        }
+
+        /* shared inner container */
+        .mega-container {
+            max-width:1200px; 
+            margin:0 auto; 
+            padding:20px 16px;
+        }
+
+        /* list block */
+        .list-block { 
+            padding:4px 10px; 
+        }
+
+        /* menu item */
+        .menu-item {
+            display:flex; 
+            gap:8px; 
+            align-items:flex-start;
+            padding:6px 8px;
+            border-radius:8px;
+            transition:background .18s ease, border-color .18s ease, color .18s ease;
+            border:1px solid transparent;
+            font-size:12px;
+            line-height:1.3;
+        }
+
+        .menu-item:hover {
+            background:rgba(255,255,255,.05);
+            border-color:rgba(255,255,255,.08);
+            color:var(--accent);
+        }
+
+        .menu-item:hover .menu-desc { 
+            color:var(--accent); 
+        }
+
+        .menu-title { 
+            font-weight:600; 
+            font-size:13px; 
+        }
+
+        .menu-desc { 
+            color:var(--text-dim); 
+            font-size:11px; 
+            margin-top:2px; 
+        }
+
+        /* icon */
+        .menu-ic {
+            width:20px; 
+            height:20px; 
+            border-radius:5px;
+            background:rgba(255,255,255,.06);
+            display:grid; 
+            place-items:center; 
+            flex-shrink:0;
+            border:1px solid rgba(255,255,255,.08);
+            transition: all 0.2s ease;
+            color:#fff;
+        }
+
+        .menu-ic svg { 
+            width:13px; 
+            height:13px; 
+            fill: currentColor; 
+        }
+
+        /* hover icon color = yellow */
+        .menu-item:hover .menu-ic {
+            background: rgba(245,158,11,0.15);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .menu-item:hover .menu-ic svg {
+            color: var(--accent);
+            fill: var(--accent);
+        }
+
+        /* section title */
+        .section-title {
+            padding:6px 10px 8px;
+            font-weight:700;
+            letter-spacing:.2px;
+            opacity:.95;
+            font-size:13px;
+        }
+
+        /* Product mega */
+        .product-grid {
+            display:grid; 
+            gap:20px;
+            grid-template-columns: 280px 1fr 260px;
+        }
+
+        /* card */
+        .card {
+            border:1px solid var(--panel-border);
+            border-radius:10px;
+            background:rgba(0, 0, 0, 0.989);
+            padding:12px;
+            font-size:12px;
+        }
+
+        .card h4 { 
+            font-size:14px; 
+            margin-bottom:10px; 
+        }
+
+        .update { 
+            padding:8px 0; 
+            border-bottom:1px solid rgba(255,255,255,.08); 
+        }
+
+        .update:last-child { 
+            border-bottom:none; 
+        }
+
+        .update time { 
+            color:var(--text-dim); 
+            font-size:10px; 
+        }
+
+        .update .u-title { 
+            display:block; 
+            margin-top:4px; 
+            font-weight:600; 
+            font-size:12px; 
+        }
+
+        /* features */
+        .features .menu-item { 
+            padding:8px; 
+        }
+
+        .features .menu-title { 
+            font-weight:600; 
+            font-size:13px; 
+        }
+
+        .product-cta {
+            margin-top:10px; 
+            display:inline-block;
+            background:linear-gradient(135deg,#fbbf24,#f59e0b);
+            color:#000; 
+            font-weight:700;
+            border-radius:20px;
+            padding:8px 14px;
+            text-transform:uppercase; 
+            font-size:11px; 
+            letter-spacing:.2px;
+        }
+
+        /* integrations */
+        .integrations .int-item {
+            display:flex; 
+            align-items:center; 
+            justify-content:space-between;
+            padding:10px 0;
+            border-bottom:1px solid rgba(255,255,255,.08);
+            font-size:12px;
+        }
+
+        .integrations .int-item:last-child { 
+            border-bottom:none; 
+        }
+
+        .integrations .arrow { 
+            opacity:.9; 
+        }
+
+        /* Resources mega */
+        .resources-grid {
+            display:grid; 
+            gap:20px;
+            grid-template-columns: 1.2fr 1fr;
+        }
+
+        .columns { 
+            display:grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap:18px; 
+        }
+
+        .box {
+            border:1px solid var(--panel-border);
+            border-radius:10px;
+            background:rgba(0,0,0,.35);
+            padding:12px;
+            font-size:12px;
+        }
+
+        .box.highlight {
+            border-color:rgba(245,158,11,.5);
+            background:linear-gradient(to bottom, rgba(245,158,11,.10), rgba(0,0,0,.35));
+        }
+
+        /* dropdown arrow */
+        .nav-item .dropdown-arrow { 
+            transition:transform .25s ease; 
+        }
+
+        .nav-item.has-mega:hover .dropdown-arrow { 
+            transform:rotate(180deg); 
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .mobile-menu-btn span {
+            width: 24px;
+            height: 2px;
+            background: #ffffff;
+            transition: all 0.3s;
+        }
+
+        /* Hamburger Animation */
+        .mobile-menu-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .mobile-menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 71px;
+            left: -100%;
+            width: 100%;
+            height: calc(100vh - 71px);
+            background: #2c2c2c;
+            z-index: 9999;
+            transition: left 0.3s ease-in-out;
+            overflow-y: auto;
+        }
+
+        .mobile-menu-overlay.active {
+            left: 0;
+        }
+
+        .mobile-menu-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            align-items: flex-start;
+        }
+
+        /* Modified mobile nav item to support hover-based sub-menus */
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            font-size: 18px;
+            font-weight: 500;
+            color: #ffffff;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: color 0.2s;
+            width: 100%;
+            position: relative;
+        }
+
+        .mobile-nav-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            width: 100%;
+        }
+
+        .mobile-nav-item:not(.login-item) {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .mobile-nav-item.login-item { 
+            border-bottom: none !important; 
+        }
+
+        .mobile-nav-item.login-item .login {
+            display: inline-block;
+            padding-bottom: 6px;
+            border-bottom: 2px solid rgba(255,255,255,0.9);
+            line-height: 1;
+        }
+
+        .mobile-nav-item .dropdown-arrow {
+            display: inline-block;
+            opacity: 0.7;
+            transition: transform 0.3s ease, opacity 0.2s ease;
+        }
+
+        /* Added hover-based sub-menu styling */
+        .mobile-submenu-content {
+            display: none;
+            background: #1a1a1a;
+            margin: 0 -20px;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .mobile-nav-item:hover .mobile-submenu-content {
+            display: block;
+        }
+
+        .mobile-nav-item:hover .dropdown-arrow {
+            transform: rotate(180deg);
+            opacity: 1;
+        }
+
+        .mobile-submenu-section {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .mobile-submenu-section:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-submenu-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 16px;
+        }
+
+        .mobile-submenu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            color: #cccccc;
+            font-size: 14px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .mobile-submenu-item:hover {
+            color: #ffa500;
+        }
+
+        .mobile-submenu-item svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .mobile-case-studies {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .mobile-case-study-logo {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+
+        .mobile-more-link {
+            color: #ffa500;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .mobile-product-updates {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .mobile-update-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .mobile-update-date {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .mobile-update-title {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .mobile-integrations {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .mobile-integration-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            color: #ffffff;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .mobile-integration-item:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-cta-button {
+            background: #ffa500;
+            color: #000000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            margin: 16px 0;
+            cursor: pointer;
+        }
+
+        .mobile-nav-cta {
+            background: transparent;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            width: 150px;
+            padding: 8px 0;
+            border-radius: 18px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        /* Added responsive breakpoint at 1024px */
+        /* Updated responsive breakpoints to ensure mobile menu shows on tablets */
+        @media (max-width: 1024px) {
+            .nav-menu {
+                display: none !important;
+            }
+            
+            .mobile-menu-btn {
+                display: flex !important;
+            }
+            
+            .nav-cta {
+                display: none;
+            }
+        }
+
+        /* Removed old navbar styles and replaced with new system */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #0066ff;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+
+        .header {
+            min-height: 100vh;
+            background-color: #000;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-arrow {
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid white;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .login-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .demo-btn {
+            background: #ff9500;
+            color: black;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Updated hero section to account for fixed navbar */
+        .hero {
+            background: #000;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            padding-top: 70px; /* Account for fixed navbar */
+        }
+
+        .hero-content {
+            text-align: center;
+            padding: 80px 40px 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 64px;
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #888;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-demo-btn {
+            background: #ff9500;
+            color: black;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin-bottom: 80px;
+        }
+
+        .hero-image {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .interface-mockup {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        .scrolling-sections {
+            background-color: white;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .sections-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 80px 60px;
+            max-width: 800px;
+            border-right: 1px solid #e5e5e5;
+        }
+
+        .section {
+            min-height: 100vh;
+            padding: 40px 0;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+        }
+
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-size: 48px;
+            font-weight: 400;
+            line-height: 1.2;
+            margin-bottom: 30px;
+            color: #000;
+        }
+
+        .section-description {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .subsection-title {
+            font-size: 32px;
+            font-weight: 400;
+            margin-bottom: 20px;
+            color: #000;
+        }
+
+        .subsection-description {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .section-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .feature-list li {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #000;
+        }
+
+        .interface-image {
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .interface-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .integration-diagram {
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .integration-diagram img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .case-study-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 40px;
+            margin: 40px 0;
+            border-left: 4px solid #00c851;
+        }
+
+        .case-study-stat {
+            margin-bottom: 30px;
+        }
+
+        .stat-number {
+            font-size: 72px;
+            font-weight: 300;
+            color: #000;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 18px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .case-study-badge {
+            background: #00c851;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .case-study-quote {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+            font-style: italic;
+            margin: 20px 0;
+            border: none;
+        }
+
+        .case-study-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .author-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .author-info {
+            flex: 1;
+        }
+
+        .author-name {
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 5px;
+        }
+
+        .author-title {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .company-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .read-story-btn {
+            background: none;
+            border: 2px solid #000;
+            color: #000;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .read-story-btn:hover {
+            background: #000;
+            color: white;
+        }
+
+        /* Fixed Sidebar */
+        .sidebar {
+            width: 320px;
+            padding: 80px 40px;
+            position: sticky;
+            top: 0;
+            height: fit-content;
+            background: white;
+        }
+
+        .sidebar-nav {
+            margin-bottom: 40px;
+        }
+
+        .nav-btn {
+            display: block;
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            color: #666;
+            padding: 12px 20px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .nav-btn.active,
+        .nav-btn:hover {
+            border-color: #000;
+            color: #000;
+            background: white;
+        }
+
+        /* Added CTA section styling to match reference */
+        .sidebar-cta {
+            background: #2a2a2a;
+            color: white;
+            padding: 30px 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .cta-btn {
+            background: #ff9500;
+            color: black;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        /* Adding FAQ section styles */
+        .faq-section {
+            background-color: #000;
+            color: white;
+            padding: 100px 0;
+        }
+
+        .faq-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .faq-title {
+            font-size: 48px;
+            font-weight: 400;
+            text-align: center;
+            margin-bottom: 80px;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .faq-list {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #333;
+            padding: 30px 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .faq-question span {
+            font-size: 20px;
+            font-weight: 400;
+            color: white;
+            line-height: 1.4;
+            flex: 1;
+            padding-right: 20px;
+        }
+
+        .faq-icon {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #666;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .question-mark {
+            color: #666;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .faq-item:hover .faq-icon {
+            border-color: white;
+        }
+
+        .faq-item:hover .question-mark {
+            color: white;
+        }
+
+        /* Adding Engineering Teams section styles */
+        .engineering-teams-section {
+            background-color: #000;
+            color: white;
+            padding: 100px 0;
+        }
+
+        .engineering-teams-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .engineering-teams-title {
+            font-size: 48px;
+            font-weight: 400;
+            text-align: center;
+            margin-bottom: 80px;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+
+        .team-card {
+            /* Updated card styling with left border only, black background, and increased width */
+            background: #000;
+            border: none;
+            border-left: 3px solid white;
+            border-radius: 0;
+            padding: 35px 30px;
+            text-align: left;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: calc(100% + 50px);
+            height: auto;
+            min-height: 280px;
+        }
+
+        .team-card:hover {
+            /* Updated hover effect to grey background */
+            background-color: #333;
+            transform: translateY(-2px);
+        }
+
+        .card-icon {
+            margin-bottom: 30px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 400;
+            color: white;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #999;
+            margin-bottom: 30px;
+        }
+
+        .learn-more-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            padding: 0;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .learn-more-btn:hover {
+            color: #ff9500;
+        }
+
+        /* Adding styles for the contact section */
+        .contact-section {
+            background-color: #000;
+               
+              padding: 80px 0;
+            color: white;
+        }
+
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .contact-content {
+            display: flex;
+            gap: 80px;
+            align-items: flex-start;
+        }
+
+        .contact-left {
+            flex: 1;
+        }
+
+        .contact-title {
+            font-size: 48px;
+            font-weight: bold;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            color: white;
+        }
+
+        .contact-description {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 32px;
+            color: #ccc;
+        }
+
+        .contact-process {
+            list-style: none;
+            padding: 0;
+        }
+
+        .process-item {
+            margin-bottom: 24px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        .process-item strong {
+            color: #ff9500;
+            font-weight: bold;
+        }
+
+        .contact-right {
+            flex: 1;
+        }
+
+        .contact-form-container {
+            background: linear-gradient(to bottom, rgba(128,128,128,0.6), rgba(0,0,0,0.9));
+            padding: 40px;
+            border-radius: 8px;
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 32px;
+            color: white;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background-color: #222;
+            color: white;
+            font-size: 16px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #0066ff;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .privacy-text {
+            font-size: 12px;
+            color: #999;
+            line-height: 1.4;
+            margin-top: 16px;
+        }
+
+        .form-submit-btn {
+            background-color: #ff9500;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-submit-btn:hover {
+            background-color: #e6850e;
+        }
+
+        @media (max-width: 1200px) {
+            .sidebar {
+                position: relative;
+                top: auto;
+                width: 100%;
+                margin-top: 40px;
+                background: white;
+            }
+
+            .sections-container {
+                flex-direction: column;
+            }
+
+            .content-area {
+                max-width: none;
+                border-right: none;
+                border-bottom: 1px solid #e5e5e5;
+            }
+
+            .teams-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 60px 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 40px 20px;
+            }
+
+            .section-title {
+                font-size: 36px;
+            }
+
+            .sidebar {
+                margin-top: 20px;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                gap: 10px;
+                overflow-x: auto;
+            }
+
+            .nav-btn {
+                white-space: nowrap;
+                min-width: 140px;
+            }
+
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            /* Removed duplicate nav-menu display none since it's handled above */
+
+            .hero-title {
+                font-size: 42px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+                padding: 0 20px;
+            }
+
+            .hero-content {
+                padding: 60px 20px 40px;
+            }
+
+            .faq-section {
+                padding: 60px 0;
+            }
+
+            .faq-container {
+                padding: 0 20px;
+            }
+
+            .faq-title {
+                font-size: 36px;
+                margin-bottom: 60px;
+            }
+
+            .faq-question span {
+                font-size: 18px;
+            }
+
+            .faq-item {
+                padding: 25px 0;
+            }
+
+            .engineering-teams-section {
+                padding: 60px 0;
+            }
+
+            .engineering-teams-container {
+                padding: 0 20px;
+            }
+
+            .engineering-teams-title {
+                font-size: 36px;
+                margin-bottom: 60px;
+            }
+
+            .teams-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .team-card {
+                text-align: center;
+            }
+
+            .contact-content {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .contact-title {
+                font-size: 36px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .contact-container {
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+        <!-- Replaced simple navbar with comprehensive responsive navbar -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                   <div class="logo"><img src="logo.png" alt="" width="50px" height="50px"></div>
+              <span class="logo-text">Devantra</span>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="nav-menu">
+                    <!-- USE CASES (compact flyout) -->
+                    <div class="nav-item has-mega">
+                        <span>Use Cases</span>
+                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+
+                        <div class="mega-panel">
+                            <div class="list-block">
+                                <div class="menu-item">
+                                    <span class="menu-ic">
+                                        <svg viewBox="0 0 24 24"><path d="M9 6h6m-7 5 2 2 5-5M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg>
+                                    </span>
+                                    <div>
+                                        <div class="menu-title" id="design-review-title">Design Review</div>
+<div class="menu-desc" id="design-review-desc">Collaborate 2x faster</div>
+                                    </div>
+                                </div>
+
+                                <div class="menu-item">
+                                    <span class="menu-ic">
+                                        <svg viewBox="0 0 24 24"><path d="M8 12l3 3 5-5M3 9l5-2 4 3m9 2-5 2-4-3"/></svg>
+                                    </span>
+                                    <div>
+                                        <div class="menu-title" id="supplier-title">Supplier Collaboration</div>
+<div class="menu-desc" id="supplier-desc">For secure, simple sharing</div>
+                                    </div>
+                                </div>
+
+                               <div class="menu-item">
+  <span class="menu-ic">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="7"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+  </span>
+  <div>
+    <div class="menu-title cost-reduction">Cost Reduction</div>
+    <div class="menu-desc cost-reduction">Hit your toughest targets</div>
+  </div>
+</div>
+
+
+                                <div class="menu-item">
+                                    <span class="menu-ic">
+                                        <svg viewBox="0 0 24 24"><path d="M9 15l-2 2 2 2 2-2m6-12-5 5M4 10l6 0m8-8-2 6-6 2"/></svg>
+                                    </span>
+                                    <div>
+                                        <div class="menu-title">New Product Development</div>
+                                        <div class="menu-desc">Launch new products faster</div>
+                                    </div>
+                                </div>
+
+                                <div class="menu-item">
+                                    <span class="menu-ic">
+                                        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0"/></svg>
+                                    </span>
+                                    <div>
+                                        <div class="menu-title">Customer Collaboration</div>
+                                        <div class="menu-desc">Be the supplier of choice</div>
+                                    </div>
+                                </div>
+
+                                <div class="menu-item">
+                                    <span class="menu-ic">
+                                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+                                    </span>
+                                    <div>
+                                        <div class="menu-title">Documentation and Audits</div>
+                                        <div class="menu-desc">Simplify audit prep</div>
+                                    </div>
+                                </div>
+
+                                <div class="menu-item">
+                                    <span class="menu-ic">
+                                        <svg viewBox="0 0 24 24"><path d="M3 21V9l6 3V9l6 3V9l6 3v9H3z"/></svg>
+                                    </span>
+                                    <div>
+                                        <div class="menu-title">Design for Manufacturability</div>
+                                        <div class="menu-desc">Ditch the DFM PowerPoint</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PRODUCT (full-width mega) -->
+                    <div class="nav-item has-mega">
+                        <span>Product</span>
+                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+
+                        <div class="mega-full">
+                            <div class="mega-container product-grid">
+                                <!-- Left: Product updates card -->
+                                <div class="card">
+                                    <h4>Product updates</h4>
+                                    <div class="update">
+                                        <time>Aug 06, 2025</time>
+                                        <span class="u-title">New Feedback Activity Tab + Locking Feedback From Editing</span>
+                                    </div>
+                                    <div class="update">
+                                        <time>Jul 08, 2025</time>
+                                        <span class="u-title">Improved Workspace Visibility</span>
+                                    </div>
+                                    <div class="update">
+                                        <time>Jun 18, 2025</time>
+                                        <span class="u-title">New: Export Feedback as a PDF or CSV Report</span>
+                                    </div>
+                                    <a class="product-cta" href="#">Product Overview</a>
+                                </div>
+
+                                <!-- Center: Features -->
+                                <div class="features">
+                                    <div class="section-title">Features</div>
+
+                                    <div class="menu-item">
+                                        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M21 8v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8m0 0l9 6 9-6M3 8l9-6 9 6"/></svg></span>
+                                        <div><div class="menu-title">Share Files</div><div class="menu-desc">Share CAD with anyone</div></div>
+                                    </div>
+
+                                    <div class="menu-item">
+                                        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M8 12h8M8 16h5M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg></span>
+                                        <div><div class="menu-title">Request Reviews</div><div class="menu-desc">Design reviews virtually</div></div>
+                                    </div>
+
+                                    <div class="menu-item">
+                                        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M3 3h18v14H3z"/><path d="M8 21h8"/></svg></span>
+                                        <div><div class="menu-title">Model Viewing</div><div class="menu-desc">Multiplayer in browser</div></div>
+                                    </div>
+
+                                    <div class="menu-item">
+                                        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M8 7h8M6 11h12M10 15h8"/></svg></span>
+                                        <div><div class="menu-title">Issue Management</div><div class="menu-desc">Made sortable for you</div></div>
+                                    </div>
+
+                                    <div class="menu-item">
+                                        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 3v6l4 2M8 19h8"/></svg></span>
+                                        <div><div class="menu-title">AutoReview</div><div class="menu-desc">Check CAD with AI</div></div>
+                                    </div>
+
+                                    <div class="menu-item">
+                                        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M8 6h8M8 10h4M6 4h12a2 2 0 0 1 2 2v12l-4-3-4 3-4-3-4 3V6a2 2 0 0 1 2-2z"/></svg></span>
+                                        <div><div class="menu-title">Pin Comments</div><div class="menu-desc">Directly on 2D or 3D</div></div>
+                                    </div>
+
+                                    <div class="menu-item">
+                                        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M8 9h8M8 13h6M4 5h16v14H4z"/></svg></span>
+                                        <div><div class="menu-title">Discuss Issues</div><div class="menu-desc">Without email threads</div></div>
+                                    </div>
+
+                                    <div class="menu-item">
+                                        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M9 21v-8h6v8"/></svg></span>
+                                        <div><div class="menu-title">Configure Feedback</div><div class="menu-desc">Assign, tag and sort issues</div></div>
+                                    </div>
+
+                                    <div class="menu-item">
+                                        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M6 6h12M8 18h8"/></svg></span>
+                                        <div><div class="menu-title">Review and Feedback Insights</div><div class="menu-desc">Everything in one overview</div></div>
+                                    </div>
+
+                                    <div class="menu-item">
+                                        <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-8-8"/><path d="M12 6v6l4 2"/></svg></span>
+                                        <div><div class="menu-title">AI Lessons Learned</div><div class="menu-desc">Prevent repeat mistakes</div></div>
+                                    </div>
+                                </div>
+
+                                <!-- Right: Integrations -->
+                                <div class="integrations">
+                                    <div class="section-title">Integrations</div>
+                                    <div class="int-item"><span>Windchill</span><span class="arrow">›</span></div>
+                                    <div class="int-item"><span>Teamcenter</span><span class="arrow">›</span></div>
+                                    <div class="int-item"><span>3DEXPERIENCE</span><span class="arrow">›</span></div>
+                                    <div class="int-item"><span>SolidWorks</span><span class="arrow">›</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPANY (compact flyout) -->
+                    <div class="nav-item has-mega company-nav">
+                        <span>Company</span>
+                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+                            <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+
+                        <div class="mega-panel company-panel" id="company-panel">
+                            <div class="list-block">
+                                <div class="menu-item">
+                                    <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M3 21V7l9-4 9 4v14M9 21v-8h6v8"/></svg></span>
+                                    <div><div class="menu-title">About Us</div><div class="menu-desc">Get to know CoLab</div></div>
+                                </div>
+                                <div class="menu-item">
+                                    <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8h7a5 5 0 0 1 5 5"/></svg></span>
+                                    <div><div class="menu-title">Why CoLab?</div><div class="menu-desc">Better products faster</div></div>
+                                </div>
+                                <div class="menu-item">
+                                    <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M6 3h12M6 11h12M8 15h8M10 19h4"/></svg></span>
+                                    <div><div class="menu-title">Careers</div><div class="menu-desc">Be part of it</div></div>
+                                </div>
+                                <div class="menu-item">
+                                    <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 1l3 6 6 1-4 5 1 7-6-3-6 3 1-7-4-5 6-1z"/></svg></span>
+                                    <div><div class="menu-title">Security</div><div class="menu-desc">How we protect your IP</div></div>
+                                </div>
+                                <div class="menu-item">
+                                    <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M4 4h16v10H4z"/><path d="M8 18h8"/></svg></span>
+                                    <div><div class="menu-title">News</div><div class="menu-desc">Stay up-to-date</div></div>
+                                </div>
+                                <div class="menu-item">
+                                    <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M21 10v10H3V4h10"/><path d="M21 10h-8V2"/></svg></span>
+                                    <div><div class="menu-title">Contact Us</div><div class="menu-desc">Get in touch</div></div>
+                                </div>
+                                <div class="menu-item">
+                                    <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg></span>
+                                    <div><div class="menu-title">DES 2025</div><div class="menu-desc">Design Engagement Summit</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RESOURCES (full-width mega) -->
+                    <div class="nav-item has-mega">
+                        <span>Resources</span>
+                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+
+                        <div class="mega-full">
+                            <div class="mega-container resources-grid">
+                                <!-- left: two columns -->
+                                <div class="columns">
+                                    <div>
+                                        <div class="section-title">Case Studies</div>
+                                        <div class="box">
+                                            <div class="menu-item"><div class="menu-title">POLARIS</div></div>
+                                            <div class="menu-item"><div class="menu-title">IMI Critical Engineering</div></div>
+                                            <div class="menu-item"><div class="menu-title">KOMATSU</div></div>
+                                            <div class="menu-item"><div class="menu-title">SCHAEFFLER</div></div>
+                                            <div class="menu-item"><div class="menu-title" style="color:var(--accent)">More case studies ›</div></div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="section-title">Resources</div>
+                                        <div class="box">
+                                            <div class="menu-item">
+                                                <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M4 19.5V4a2 2 0 0 0 2-2h9l5 5v12.5"/></svg></span>
+                                                <div><div class="menu-title">Blog</div><div class="menu-desc">Our articles</div></div>
+                                            </div>
+                                            <div class="menu-item">
+                                                <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M7 8h10M7 12h10M7 16h10"/></svg></span>
+                                                <div><div class="menu-title">Onboarding</div><div class="menu-desc">Starting with CoLab</div></div>
+                                            </div>
+                                            <div class="menu-item">
+                                                <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
+                                                <div><div class="menu-title">CoLab Research Hub</div><div class="menu-desc">The latest engineering trends</div></div>
+                                            </div>
+                                            <div class="menu-item">
+                                                <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 19l9-7-9-7-9 7 9 7z"/></svg></span>
+                                                <div><div class="menu-title">What is a DES?</div><div class="menu-desc">Dive deeper into DES</div></div>
+                                            </div>
+                                            <div class="menu-item">
+                                                <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M3 3h18v14H3z"/><path d="M8 21h8"/></svg></span>
+                                                <div><div class="menu-title">Product Tour Library</div><div class="menu-desc">Everything about our product</div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- right highlight cards -->
+                                <div>
+                                    <div class="box highlight" style="margin-bottom:18px">
+                                        <div class="menu-item">
+                                            <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M3 11l19-8-8 19-2-9-9-2z"/></svg></span>
+                                            <div>
+                                                <div class="menu-title">Contact Support</div>
+                                                <div class="menu-desc">Submit a ticket</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="box highlight">
+                                        <div class="menu-item">
+                                            <span class="menu-ic"><svg viewBox="0 0 24 24"><path d="M12 3l10 6-10 6L2 9l10-6z"/><path d="M2 15l10 6 10-6"/></svg></span>
+                                            <div>
+                                                <div class="menu-title">Knowledge Base</div>
+                                                <div class="menu-desc">Helpful articles</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nav-item" style="border-bottom: 2px solid white; display: inline-block;">LOGIN</div>
+
+                    <button class="nav-cta">GET A DEMO</button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Mobile Menu Overlay -->
+        <div class="mobile-menu-overlay">
+            <div class="mobile-menu-content">
+                
+                <!-- Modified Use Cases section to use hover-based sub-menu -->
+                <div class="mobile-nav-item">
+                    <div class="mobile-nav-item-header">
+                        <span>Use Cases</span>
+                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+                            <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="mobile-submenu-content">
+                        <div class="mobile-submenu-section">
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M9 6h6m-7 5 2 2 5-5M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+                                </svg>
+                                Design Review
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 12l3 3 5-5M3 9l5-2 4 3m9 2-5 2-4-3"/>
+                                </svg>
+                                Supplier Collaboration
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                Cost Reduction
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M9 15l-2 2 2 2 2-2m6-12-5 5M4 10l6 0m8-8-2 6-6 2"/>
+                                </svg>
+                                New Product Development
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0"/>
+                                </svg>
+                                Customer Collaboration
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>
+                                </svg>
+                                Documentation and Audits
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 21V9l6 3V9l6 3V9l6 3v9H3z"/>
+                                </svg>
+                                Design for Manufacturability
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Updated Product section with complete desktop content including Product updates, Features, and Integrations -->
+                <div class="mobile-nav-item">
+                    <div class="mobile-nav-item-header">
+                        <span>Product</span>
+                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+                            <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="mobile-submenu-content">
+                        <div class="mobile-submenu-section">
+                            <div class="mobile-submenu-title">Product updates</div>
+                            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                                <div style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                    <div style="color: #a7a7a7; font-size: 10px;">Aug 06, 2025</div>
+                                    <div style="font-weight: 600; font-size: 12px; margin-top: 4px;">New Feedback Activity Tab + Locking Feedback From Editing</div>
+                                </div>
+                                <div style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                    <div style="color: #a7a7a7; font-size: 10px;">Jul 08, 2025</div>
+                                    <div style="font-weight: 600; font-size: 12px; margin-top: 4px;">Improved Workspace Visibility</div>
+                                </div>
+                                <div style="padding: 8px 0;">
+                                    <div style="color: #a7a7a7; font-size: 10px;">Jun 18, 2025</div>
+                                    <div style="font-weight: 600; font-size: 12px; margin-top: 4px;">New: Export Feedback as a PDF or CSV Report</div>
+                                </div>
+                                <button style="background: linear-gradient(135deg,#fbbf24,#f59e0b); color: #000; font-weight: 700; border-radius: 20px; padding: 8px 14px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.2px; border: none; margin-top: 10px; cursor: pointer;">PRODUCT OVERVIEW</button>
+                            </div>
+                        </div>
+                        
+                        <div class="mobile-submenu-section">
+                            <div class="mobile-submenu-title">Features</div>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M21 8v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8m0 0l9 6 9-6M3 8l9-6 9 6"/>
+                                </svg>
+                                Share Files
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 6h8M6 11h12M10 15h8"/>
+                                </svg>
+                                Pin Comments
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 12h8M8 16h5M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+                                </svg>
+                                Request Reviews
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 3h18v14H3z"/><path d="M8 21h8"/>
+                                </svg>
+                                Model Viewing
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 9h8M8 13h6M4 5h16v14H4z"/>
+                                </svg>
+                                Discuss Issues
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 3v18M9 21v-8h6v8"/>
+                                </svg>
+                                Configure Feedback
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 7h8M6 11h12M10 15h8"/>
+                                </svg>
+                                Issue Management
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 3v18M3 12h18M6 6h12M8 18h8"/>
+                                </svg>
+                                Review and Feedback Insights
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 3v6l4 2M8 19h8"/>
+                                </svg>
+                                AutoReview
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20 12a8 8 0 1 1-8-8"/><path d="M12 6v6l4 2"/>
+                                </svg>
+                                AI Lessons Learned
+                            </a>
+                        </div>
+
+                        <div class="mobile-submenu-section">
+                            <div class="mobile-submenu-title">Integrations</div>
+                            <a href="#" class="mobile-submenu-item">
+                                <span>Windchill</span>
+                                <span style="margin-left: auto; opacity: 0.9;">›</span>
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <span>Teamcenter</span>
+                                <span style="margin-left: auto; opacity: 0.9;">›</span>
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <span>3DEXPERIENCE</span>
+                                <span style="margin-left: auto; opacity: 0.9;">›</span>
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <span>SolidWorks</span>
+                                <span style="margin-left: auto; opacity: 0.9;">›</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Updated Company section with complete desktop content -->
+                <div class="mobile-nav-item">
+                    <div class="mobile-nav-item-header">
+                        <span>Company</span>
+                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+                            <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="mobile-submenu-content">
+                        <div class="mobile-submenu-section">
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 21V7l9-4 9 4v14M9 21v-8h6v8"/>
+                                </svg>
+                                About Us
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 3v18M5 8h7a5 5 0 0 1 5 5"/>
+                                </svg>
+                                Why CoLab?
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M4 7h16M6 3h12M6 11h12M8 15h8M10 19h4"/>
+                                </svg>
+                                Careers
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 1l3 6 6 1-4 5 1 7-6-3-6 3 1-7-4-5 6-1z"/>
+                                </svg>
+                                Security
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M4 4h16v10H4z"/><path d="M8 18h8"/>
+                                </svg>
+                                News
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M21 10v10H3V4h10"/><path d="M21 10h-8V2"/>
+                                </svg>
+                                Contact Us
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M5 12h14M12 5v14"/>
+                                </svg>
+                                DES 2025
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Updated Resources section with complete desktop content including Case Studies and Resources -->
+                <div class="mobile-nav-item">
+                    <div class="mobile-nav-item-header">
+                        <span>Resources</span>
+                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+                            <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="mobile-submenu-content">
+                        <div class="mobile-submenu-section">
+                            <div class="mobile-submenu-title">Case Studies</div>
+                            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                                <div class="mobile-submenu-item" style="padding: 4px 0;">
+                                    <div style="font-weight: 600;">POLARIS</div>
+                                </div>
+                                <div class="mobile-submenu-item" style="padding: 4px 0;">
+                                    <div style="font-weight: 600;">IMI Critical Engineering</div>
+                                </div>
+                                <div class="mobile-submenu-item" style="padding: 4px 0;">
+                                    <div style="font-weight: 600;">KOMATSU</div>
+                                </div>
+                                <div class="mobile-submenu-item" style="padding: 4px 0;">
+                                    <div style="font-weight: 600;">SCHAEFFLER</div>
+                                </div>
+                                <div class="mobile-submenu-item" style="padding: 4px 0;">
+                                    <div style="font-weight: 600; color: #f59e0b;">More case studies ›</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mobile-submenu-section">
+                            <div class="mobile-submenu-title">Resources</div>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M4 19.5V4a2 2 0 0 0 2-2h9l5 5v12.5"/>
+                                </svg>
+                                Blog
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 19l9-7-9-7-9 7 9 7z"/>
+                                </svg>
+                                What is a DES?
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 8h10M7 12h10M7 16h10"/>
+                                </svg>
+                                Onboarding
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 3h18v14H3z"/><path d="M8 21h8"/>
+                                </svg>
+                                Product Tour Library
+                            </a>
+                            <a href="#" class="mobile-submenu-item">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M4 6h16M4 12h16M4 18h16"/>
+                                </svg>
+                                CoLab Research Hub
+                            </a>
+                        </div>
+
+                        <div class="mobile-submenu-section">
+                            <div style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                                <a href="#" class="mobile-submenu-item" style="padding: 0;">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M3 11l19-8-8 19-2-9-9-2z"/>
+                                    </svg>
+                                    <div>
+                                        <div style="font-weight: 600;">Contact Support</div>
+                                        <div style="color: #a7a7a7; font-size: 11px;">Submit a ticket</div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); padding: 12px; border-radius: 8px;">
+                                <a href="#" class="mobile-submenu-item" style="padding: 0;">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 3l10 6-10 6L2 9l10-6z"/><path d="M2 15l10 6 10-6"/>
+                                    </svg>
+                                    <div>
+                                        <div style="font-weight: 600;">Knowledge Base</div>
+                                        <div style="color: #a7a7a7; font-size: 11px;">Helpful articles</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Updated LOGIN to be a proper nav item and GET A DEMO to be a button -->
+                <div class="mobile-nav-item login-item">
+                    <div class="mobile-nav-item-header">
+                        <span class="login">LOGIN</span>
+                    </div>
+                </div>
+
+                <div style="padding: 20px 0;">
+                    <button style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; font-weight: 700; border-radius: 25px; padding: 12px 24px; text-transform: uppercase; font-size: 14px; letter-spacing: 0.5px; border: none; cursor: pointer; width: 100%;">GET A DEMO</button>
+                </div>
+            </div>
+        </div>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">A technical review package your supplier can actually use</h1>
+            <p class="hero-subtitle">
+                CoLab lets you bring suppliers into design conversations much earlier — 
+                shortening product development cycles and exposing risk before a drawing 
+                gets to production.
+            </p>
+            <a href="#" class="hero-demo-btn">GET A DEMO</a>
+            
+            <div class="hero-image">
+                <img src="https://cdn.prod.website-files.com/5e4d9854e6dad067f4b514b3/66294d42a451788e0f22a8a8_Solutions_Header.webp" alt="CoLab Interface" class="interface-mockup">
+            </div>
+        </div>
+    </div>
+
+    <!-- Adding new scrolling sections after header -->
+    <div class="scrolling-sections">
+        <div class="sections-container">
+            <div class="content-area">
+                <!-- How it Works Section -->
+                <section class="section active" id="how-it-works">
+                    <div class="section-content">
+                        <h2 class="section-title">How it works</h2>
+                        <p class="section-description">
+                            CoLab provides secure file sharing that works with your PLM system, so you can 
+                            get better, faster design feedback from your suppliers.
+                        </p>
+                        
+                        <h3 class="subsection-title">Speed up the supplier review process</h3>
+                        <p class="subsection-description">Does this sound familiar?</p>
+                        
+                        <ul class="feature-list">
+                            <li>You create a file package for your supplier to review.</li>
+                            <li>You send that package via email or a PowerPoint link.</li>
+                            <li>You wait... and wait... and wait for your supplier to review the files</li>
+                            <li>You set up a meeting to review the final quotes.</li>
+                        </ul>
+                        
+                        <p class="section-text">
+                            It doesn't have to be this way. Speed is still the greatest hurdle for teams trying to bring suppliers into 
+                            the product development process. Whether it's an RFQ, DFM review or quality check, there doesn't 
+                            seem to be an easy way to get feedback from suppliers earlier.
+                        </p>
+                        
+                        <p class="section-text">
+                            Teams who use CoLab set-up dedicated online portals for suppliers to review drawings, 3D models 
+                            and PMI documentation. All with direct support from your PLM – rather than just another app for your 
+                            team to ignore.
+                        </p>
+                        
+                        <p class="section-text">
+                            So, you get the critical input you need without the hassle of packaging, sending and waiting for 
+                            feedback. And without a complicated license fee.
+                        </p>
+                        
+                        <!-- Added image under How it works section -->
+                        <div class="interface-image">
+                            <img src="https://cdn.prod.website-files.com/5e4d9854e6dad067f4b514b3/662afdad45340c70fc5573ee_Solutions_Feature_1%20(1).png" alt="How it works interface" />
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Get Full Visibility Section -->
+                <section class="section" id="get-visibility">
+                    <div class="section-content">
+                        <h2 class="section-title">Get full visibility into what's happening with your files</h2>
+                        <p class="section-text">
+                            Up to 80% of drawings and models get shared by suppliers (to their suppliers), without you ever 
+                            knowing.
+                        </p>
+                        <p class="section-text">
+                            Regain control of your critical IP with secure, traceable file sharing.
+                        </p>
+                        <p class="section-text">
+                            CoLab lets you create portals for external sharing, each with custom permissions to view, share, or 
+                            download files.
+                        </p>
+                        <p class="section-text">
+                            That means every supplier gets the access they need. When you're done collaborating, shut down 
+                            file access just as easily.
+                        </p>
+                        
+                        <div class="interface-image">
+                            <!-- Updated image URL for Get full visibility section -->
+                            <img src="https://cdn.prod.website-files.com/5e4d9854e6dad067f4b514b3/662afdad45340c70fc5573ee_Solutions_Feature_1%20(1).png" alt="File sharing interface" />
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Integrations Section -->
+                <section class="section" id="integrations">
+                    <div class="section-content">
+                        <h2 class="section-title">Integrations</h2>
+                        <p class="section-text">
+                            You don't need yet another disconnected software solution. That's why CoLab does two things:
+                        </p>
+                        <ul class="feature-list">
+                            <li>It integrates with your CAD and PLM software to create a connected tech ecosystem.</li>
+                            <li>It replaces the 5-10 apps you use to complete a single process workflow with 1-2 apps (CoLab + PLM, for example)</li>
+                        </ul>
+                        <p class="section-text">
+                            CoLab supports <strong>more than 70 file types</strong>, including native and neutral CAD and integrates with many 
+                            PLM/PDM systems.
+                        </p>
+                        <p class="section-text">
+                            Aside from engineering system integrations, CoLab also integrates with Jira and supports security 
+                            protocols, like SSO, user permissions and more.
+                        </p>
+                        
+                        <div class="integration-diagram">
+                            <!-- Updated image URL for Integrations section -->
+                            <img src="https://cdn.prod.website-files.com/5e4d9854e6dad067f4b514b3/662edcb069f13d81f416903a_Solutions_Feature_3%20(1).png" alt="Integration diagram" />
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Turn Vendors into Partners Section -->
+                <section class="section" id="vendor-partners">
+                    <div class="section-content">
+                        <h2 class="section-title">Turn vendors into partners</h2>
+                        <p class="section-text">
+                            Yes — your vendors are just as frustrated as you with how you engage them during product 
+                            development. And as engineering teams get more top-down pressure to diversify supplier networks 
+                            or ensure vendors can meet predicted demand, this frustration leads to commodity vendor 
+                            relationships.
+                        </p>
+                        <p class="section-text">
+                            What if, instead, you had a platform where your team could engage with vendors early and often 
+                            during a PD cycle?
+                        </p>
+                        <p class="section-text">
+                            Teams who use CoLab bring their vendors into product development conversations earlier by 
+                            sharing 3D models, drawings and more in a dedicated, online vendor portal. Then vendors 
+                            participate in design conversations rather than pilot build requirements requests.
+                        </p>
+                        <p class="section-text">
+                            This means less late-stage design errors for your team and a smoother experience for your vendors.
+                        </p>
+                        
+                        <div class="interface-image">
+                            <!-- Updated image URL for Turn vendors into partners section -->
+                            <img src="https://cdn.prod.website-files.com/5e4d9854e6dad067f4b514b3/662b914330e98f5c0bd9b027_Solutions_Feature_3.png" alt="Vendor collaboration interface" />
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Case Studies Section -->
+                <section class="section" id="case-studies">
+                    <div class="section-content">
+                        <h2 class="section-title">Supplier collaboration case studies</h2>
+                        <p class="section-text">
+                            Engineering teams use CoLab to collaborate with suppliers nearly every day.
+                        </p>
+                        <p class="section-text">
+                            Mainspring Energy saw a huge opportunity to speed up product development by streamlining their 
+                            supplier collaboration process. With CoLab, during the first six months, the team has seen a 50% 
+                            cost reduction during product development... in half the time.
+                        </p>
+                        
+                        <div class="case-study-card">
+                            <div class="case-study-stat">
+                                <div class="stat-number">50%</div>
+                                <div class="stat-label">cost reduction</div>
+                            </div>
+                            <div class="case-study-content">
+                                <div class="case-study-badge">Product Redesigns</div>
+                                <blockquote class="case-study-quote">
+                                    "The way we were doing our work is the same way that everyone else has traditionally 
+                                    been doing their work. Take screenshots [of a design], put that into a slide deck, and 
+                                    send that slide deck around for comments. Then you're getting 10 people in a 
+                                    conference room for an hour. That's how we were doing things, but we knew there had 
+                                    to be a better way."
+                                </blockquote>
+                                <div class="case-study-author">
+                                    <img src="/placeholder.svg?height=50&width=50" alt="Kevin Walters" class="author-photo" />
+                                    <div class="author-info">
+                                        <div class="author-name">Kevin Walters</div>
+                                        <div class="author-title">Senior Director of Hardware Engineering</div>
+                                    </div>
+                                    <div class="company-logo">
+                                        <strong>Mainspring</strong>
+                                    </div>
+                                </div>
+                                <button class="read-story-btn">READ THE STORY</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Fixed Right Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-nav">
+                    <button class="nav-btn active" data-section="how-it-works">How It Works</button>
+                    <button class="nav-btn" data-section="integrations">Integrations</button>
+                    <button class="nav-btn" data-section="case-studies">Case Studies</button>
+                </div>
+                
+                <div class="sidebar-cta">
+                    <h3 class="cta-title">Ready to invest in engineering excellence?</h3>
+                    <a href="#" class="cta-btn">GET A DEMO</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adding standalone FAQ section after scrolling sections -->
+    <div class="faq-section">
+        <div class="faq-container">
+            <h2 class="faq-title">FAQs about using CoLab for Supplier Collaboration</h2>
+            
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is it possible to have live collaboration or collaboration that happens and can be checked later?</span>
+                        <div class="faq-icon">
+                            <div class="question-mark">?</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can CoLab help in automating supplier quality checklists?</span>
+                        <div class="faq-icon">
+                            <div class="question-mark">?</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can I share a single file with multiple suppliers without each supplier seeing the others' feedback?</span>
+                        <div class="faq-icon">
+                            <div class="question-mark">?</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can a supplier request a review from a portal?</span>
+                        <div class="faq-icon">
+                            <div class="question-mark">?</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>When you have an assembly, can you assign individual components within that assembly to certain suppliers?</span>
+                        <div class="faq-icon">
+                            <div class="question-mark">?</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>For security reasons, will we be able to cut off access to a supplier portal once a review is complete?</span>
+                        <div class="faq-icon">
+                            <div class="question-mark">?</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Are supplier Portals an added cost? And how does licensing within Portal work?</span>
+                        <div class="faq-icon">
+                            <div class="question-mark">?</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adding new "How engineering teams use CoLab" section after FAQ section -->
+    <div class="engineering-teams-section">
+        <div class="engineering-teams-container">
+            <h2 class="engineering-teams-title">How engineering teams use CoLab</h2>
+            
+            <div class="teams-grid">
+                <div class="team-card">
+                    <div class="card-icon design-review-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <circle cx="24" cy="24" r="20" stroke="#0066ff" stroke-width="2" fill="none"/>
+                            <path d="M16 24l6 6 12-12" stroke="#0066ff" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Design Review</h3>
+                    <p class="card-description">
+                        Whether you're discussing a prototype or a production drawing, 
+                        CoLab makes sure everyone is on the same page. Review designs 
+                        together in 3D and pin feedback directly to a model or drawing.
+                    </p>
+                    <button class="learn-more-btn">LEARN MORE</button>
+                </div>
+                
+                <div class="team-card">
+                    <div class="card-icon supplier-collaboration-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <circle cx="24" cy="24" r="6" fill="#ff9500"/>
+                            <circle cx="12" cy="16" r="4" fill="#ff9500"/>
+                            <circle cx="36" cy="16" r="4" fill="#ff9500"/>
+                            <circle cx="12" cy="32" r="4" fill="#ff9500"/>
+                            <circle cx="36" cy="32" r="4" fill="#ff9500"/>
+                            <line x1="18" y1="18" x2="20" y2="20" stroke="#ff9500" stroke-width="2"/>
+                            <line x1="28" y1="20" x2="30" y2="18" stroke="#ff9500" stroke-width="2"/>
+                            <line x1="18" y1="30" x2="20" y2="28" stroke="#ff9500" stroke-width="2"/>
+                            <line x1="28" y1="28" x2="30" y2="30" stroke="#ff9500" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Supplier Collaboration</h3>
+                    <p class="card-description">
+                        It shouldn't be hard to tap into your supplier's expertise. Whether you 
+                        need DFM feedback or you're running a multi-supplier RFQ, 
+                        CoLab makes it easy to share CAD and drawings, exchange design 
+                        feedback, and approve revisions.
+                    </p>
+                    <button class="learn-more-btn">LEARN MORE</button>
+                </div>
+                
+                <div class="team-card">
+                    <div class="card-icon customer-collaboration-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <rect x="8" y="12" width="32" height="24" rx="2" stroke="#00c851" stroke-width="2" fill="none"/>
+                            <path d="M16 20l8 6 8-6" stroke="#00c851" stroke-width="2" fill="none"/>
+                            <circle cx="38" cy="10" r="6" fill="#00c851"/>
+                            <path d="M35 10l2 2 4-4" stroke="white" stroke-width="1.5" fill="none"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Customer Collaboration</h3>
+                    <p class="card-description">
+                        With CoLab, you can make design expertise your competitive 
+                        advantage. Run interactive technical evaluations with 
+                        prospective customers to stand out in RFQs and grow your 
+                        business.
+                    </p>
+                    <button class="learn-more-btn">LEARN MORE</button>
+                </div>
+                
+                <div class="team-card">
+                    <div class="card-icon cost-reduction-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <rect x="8" y="8" width="32" height="32" rx="4" stroke="#666" stroke-width="2" fill="none"/>
+                            <path d="M16 32l4-8 4 4 4-6 4 2" stroke="#666" stroke-width="2" fill="none"/>
+                            <circle cx="16" cy="32" r="2" fill="#666"/>
+                            <circle cx="20" cy="24" r="2" fill="#666"/>
+                            <circle cx="24" cy="28" r="2" fill="#666"/>
+                            <circle cx="28" cy="22" r="2" fill="#666"/>
+                            <circle cx="32" cy="24" r="2" fill="#666"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Cost Reduction (VA/VE)</h3>
+                    <p class="card-description">
+                        CoLab helps engineering teams achieve 6, 7, and 8-figure cost 
+                        reduction targets by giving you a repeatable way to run highly 
+                        engaging value analysis experiments with groups of any size.
+                    </p>
+                    <button class="learn-more-btn">LEARN MORE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adding new "Better products start with better design conversations" section -->
+    <div class="contact-section">
+        <div class="contact-container">
+            <div class="contact-content">
+                <div class="contact-left">
+                    <h2 class="contact-title">Better products start with better design conversations.</h2>
+                    <p class="contact-description">
+                        If you're ready to see how CoLab can transform the way you work with suppliers, here's how the process works.
+                    </p>
+                    
+                    <ul class="contact-process">
+                        <li class="process-item">
+                            <strong>Every conversation starts with a discovery call.</strong> During this call, a technical expert will understand your team's challenges with design review today
+                        </li>
+                        <li class="process-item">
+                            <strong>Then, we'll tailor a demo to address those challenges.</strong> This demo includes you, of course, but also some key members from your team who can speak to your challenges in greater detail and vet CoLab as the solution.
+                        </li>
+                        <li class="process-item">
+                            <strong>Finally, we do a workshop with more members of your team.</strong> This is the fun part! During this workshop, your team will each have temporary CoLab licenses and participate in a sample design review. You and your team will be guided through key features and use cases right inside the CoLab platform.
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="contact-right">
+                    <div class="contact-form-container">
+                        <h3 class="form-title">Schedule a talk with a CoLab product expert.</h3>
+                        
+                        <form class="contact-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName">First name</label>
+                                    <input type="text" id="firstName" name="firstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last name</label>
+                                    <input type="text" id="lastName" name="lastName" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Business email</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="hearAbout">How did you hear about us?</label>
+                                <input type="text" id="hearAbout" name="hearAbout">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="discuss">Anything specific you'd like to discuss during the demo?</label>
+                                <textarea id="discuss" name="discuss" rows="4"></textarea>
+                            </div>
+                            
+                            <p class="privacy-text">
+                                We store and process the data in this form to respond to your request. For more information on how we use data, please refer to our Privacy Policy.
+                            </p>
+                            
+                            <button type="submit" class="form-submit-btn">GET A DEMO</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adding JavaScript for section navigation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const sections = document.querySelectorAll('.section');
+            
+            // Handle navigation button clicks
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetSection = this.getAttribute('data-section');
+                    
+                    // Remove active class from all buttons and sections
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show target section
+                    const targetElement = document.getElementById(targetSection);
+                    if (targetElement) {
+                        targetElement.classList.add('active');
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+            // Handle scroll-based section switching
+            const observerOptions = {
+                root: null,
+                rootMargin: '-50% 0px -50% 0px',
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const sectionId = entry.target.id;
+                        
+                        // Update active section
+                        sections.forEach(s => s.classList.remove('active'));
+                        entry.target.classList.add('active');
+                        
+                        // Update active navigation button
+                        navBtns.forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.getAttribute('data-section') === sectionId) {
+                                btn.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all sections
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+    
+    <!-- Adding footer section exactly as shown in reference image -->
+    <footer class="footer-section">
+        <div class="footer-container">
+            <div class="footer-content">
+                <!-- Left side with logo and CTA -->
+                <div class="footer-left">
+                    <div class="footer-logo">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#4A90E2"/>
+                            <path d="M2 17L12 22L22 17" stroke="#4A90E2" stroke-width="2" fill="none"/>
+                            <path d="M2 12L12 17L22 12" stroke="#4A90E2" stroke-width="2" fill="none"/>
+                        </svg>
+                        <span class="footer-logo-text">COLAB</span>
+                    </div>
+                    <p class="footer-tagline">Deliver better products, faster.</p>
+                    <button class="footer-cta-btn">GET A DEMO</button>
+                    <div class="footer-social">
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 23.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Navigation columns -->
+                <div class="footer-nav">
+                    <div class="footer-column">
+                        <h3>Why CoLab?</h3>
+                        <ul>
+                            <li><a href="#">AutoReview</a></li>
+                            <li><a href="#">Product Overview</a></li>
+                            <li><a href="#">Case Studies</a></li>
+                            <li><a href="#">Security</a></li>
+                            <li><a href="#">Integrations</a></li>
+                            <li><a href="#">Onboarding</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h3>Resources</h3>
+                        <ul>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Product Tour Library</a></li>
+                            <li><a href="#">Knowledge Base</a></li>
+                            <li><a href="#">Peer Check Podcast</a></li>
+                            <li><a href="#">Agile for Hardware</a></li>
+                            <li><a href="#">Design Review Resources</a></li>
+                            <li><a href="#">VA/VE for Mechanical</a></li>
+                            <li><a href="#">CAD Collaboration Guide</a></li>
+                            <li><a href="#">Modernizing TDPs</a></li>
+                            <li><a href="#">AI Tools for Engineers</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h3>Company</h3>
+                        <ul>
+                            <li><a href="#">Our Story</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Contact</a></li>
+                            <li><a href="#">DES 2025</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h3>Contact</h3>
+                        <ul>
+                            <li><a href="#">Sales</a></li>
+                            <li><a href="#">Support</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer bottom -->
+            <div class="footer-bottom">
+                <p>© 2025 CoLab Software | All Rights Reserved | 
+                    <a href="#">Privacy Policy</a> | 
+                    <a href="#">Terms and Conditions</a> | 
+                    <a href="#">Terms of Use</a> | 
+                    <a href="#">CC Artwork Attribution</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .footer-section {
+            background-color: #000;
+            color: #fff;
+            padding: 80px 0 40px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            gap: 80px;
+            margin-bottom: 60px;
+        }
+
+        .footer-left {
+            flex: 0 0 300px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .footer-logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .footer-tagline {
+            color: #888;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .footer-cta-btn {
+            background-color: #ff8c00;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .footer-cta-btn:hover {
+            background-color: #ffb347;
+            transform: translateY(-2px);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background-color: #ffeb3b;
+            color: #000;
+        }
+
+        .footer-nav {
+            display: flex;
+            gap: 60px;
+            flex: 1;
+        }
+
+        .footer-column h3 {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-column li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column a {
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-column a:hover {
+            color: #ffeb3b;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #333;
+            padding-top: 30px;
+            text-align: center;
+        }
+
+        .footer-bottom p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .footer-bottom a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-bottom a:hover {
+            color: #ffeb3b;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .footer-nav {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .footer-left {
+                flex: none;
+            }
+        }
+    </style>
+
+    <!-- Adding JavaScript for section navigation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const sections = document.querySelectorAll('.section');
+            
+            // Handle navigation button clicks
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetSection = this.getAttribute('data-section');
+                    
+                    // Remove active class from all buttons and sections
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show target section
+                    const targetElement = document.getElementById(targetSection);
+                    if (targetElement) {
+                        targetElement.classList.add('active');
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+            // Handle scroll-based section switching
+            const observerOptions = {
+                root: null,
+                rootMargin: '-50% 0px -50% 0px',
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const sectionId = entry.target.id;
+                        
+                        // Update active section
+                        sections.forEach(s => s.classList.remove('active'));
+                        entry.target.classList.add('active');
+                        
+                        // Update active navigation button
+                        navBtns.forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.getAttribute('data-section') === sectionId) {
+                                btn.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all sections
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+
+    <!-- Adding JavaScript for mobile menu toggle functionality -->
+    <!-- Simplified JavaScript by removing expandable section functionality -->
+    <script>
+        function toggleMobileMenu() {
+            const menuBtn = document.querySelector(".mobile-menu-btn")
+            const mobileMenuOverlay = document.querySelector(".mobile-menu-overlay")
+
+            menuBtn.classList.toggle("active")
+            mobileMenuOverlay.classList.toggle("active")
+
+            // Prevent body scroll when menu is open
+            if (mobileMenuOverlay.classList.contains("active")) {
+                document.body.style.overflow = "hidden"
+            } else {
+                document.body.style.overflow = "auto"
+            }
+        }
+
+        document.addEventListener("click", (e) => {
+            const mobileMenuOverlay = document.querySelector(".mobile-menu-overlay")
+            const menuBtn = document.querySelector(".mobile-menu-btn")
+
+            if (
+                mobileMenuOverlay.classList.contains("active") &&
+                !mobileMenuOverlay.contains(e.target) &&
+                !menuBtn.contains(e.target)
+            ) {
+                toggleMobileMenu()
+            }
+        })
+
+  document.querySelectorAll(".cost-reduction").forEach(item => {
+    item.addEventListener("click", function() {
+      window.location.href = "cost_reduction.html";
+    });
+  });
+
+  document.querySelectorAll(".cost-reduction").forEach(item => {
+    item.addEventListener("click", function() {
+      window.location.href = "cost_reduction.html";
+    });
+  });
+
+function goToDesignReview() {
+    window.location.href = "design_review.html";
+  }
+
+  // Add click listeners
+  document.getElementById("design-review-title").addEventListener("click", goToDesignReview);
+  document.getElementById("design-review-desc").addEventListener("click", goToDesignReview);
+ function goToSupplier() {
+    window.location.href = "supplier_collaboration.html";
+  }
+
+  document.getElementById("supplier-title").addEventListener("click", goToSupplier);
+  document.getElementById("supplier-desc").addEventListener("click", goToSupplier);
+
+        // Close mobile menu when clicking on menu items
+        document.querySelectorAll(".mobile-submenu-item, .mobile-nav-item.login-item").forEach((item) => {
+            item.addEventListener("click", () => {
+                if (document.querySelector(".mobile-menu-overlay").classList.contains("active")) {
+                    toggleMobileMenu()
+                }
+            })
+        }) 
+         document.querySelectorAll(".cost-reduction").forEach(function(el) {
+    el.addEventListener("click", function() {
+      window.location.href = "cost_reduction.html";
+    });
+  });
+    </script>
+</body>
+</html>
